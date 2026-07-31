@@ -83,10 +83,10 @@ export function Navbar() {
             ))}
             <li className="mt-2 flex gap-2">
               <Button variant="outline" size="sm" className="flex-1" asChild>
-                <a href="#start">{t("nav_login")}</a>
+                <Link to="/auth">{t("nav_login")}</Link>
               </Button>
               <Button size="sm" className="flex-1" asChild>
-                <a href="#start">{t("nav_start")}</a>
+                <Link to="/auth">{t("nav_start")}</Link>
               </Button>
             </li>
           </ul>
