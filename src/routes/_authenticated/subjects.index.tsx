@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/_authenticated/subjects")({
+export const Route = createFileRoute("/_authenticated/subjects/")({
   head: () => ({
     meta: [
       { title: "Subjects — InfoPath IT curriculum roadmap" },
