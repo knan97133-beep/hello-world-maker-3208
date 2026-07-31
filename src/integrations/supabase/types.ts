@@ -14,16 +14,367 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      challenges: {
+        Row: {
+          created_at: string
+          id: string
+          level: Database["public"]["Enums"]["difficulty"]
+          points: number
+          prompt_ar: string | null
+          prompt_en: string | null
+          sort_order: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          points?: number
+          prompt_ar?: string | null
+          prompt_en?: string | null
+          sort_order?: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          points?: number
+          prompt_ar?: string | null
+          prompt_en?: string | null
+          sort_order?: number
+          subject_id?: string
+          title_ar?: string
+          title_en?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          current_semester: number | null
+          current_year: number | null
+          full_name: string | null
+          id: string
+          university: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          current_semester?: number | null
+          current_year?: number | null
+          full_name?: string | null
+          id: string
+          university?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          current_semester?: number | null
+          current_year?: number | null
+          full_name?: string | null
+          id?: string
+          university?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      progress: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          item_id: string | null
+          item_type: Database["public"]["Enums"]["progress_item"]
+          score: number | null
+          subject_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_type: Database["public"]["Enums"]["progress_item"]
+          score?: number | null
+          subject_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_type?: Database["public"]["Enums"]["progress_item"]
+          score?: number | null
+          subject_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "progress_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          id: string
+          level: Database["public"]["Enums"]["difficulty"]
+          points: number
+          sort_order: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+        }
+        Insert: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          points?: number
+          sort_order?: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+        }
+        Update: {
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          points?: number
+          sort_order?: number
+          subject_id?: string
+          title_ar?: string
+          title_en?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          explanation_ar: string | null
+          explanation_en: string | null
+          id: string
+          options_ar: string[]
+          options_en: string[]
+          question_ar: string
+          question_en: string
+          sort_order: number
+          subject_id: string
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string
+          explanation_ar?: string | null
+          explanation_en?: string | null
+          id?: string
+          options_ar: string[]
+          options_en: string[]
+          question_ar: string
+          question_en: string
+          sort_order?: number
+          subject_id: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          explanation_ar?: string | null
+          explanation_en?: string | null
+          id?: string
+          options_ar?: string[]
+          options_en?: string[]
+          question_ar?: string
+          question_en?: string
+          sort_order?: number
+          subject_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          created_at: string
+          duration_hours: number | null
+          id: string
+          is_free: boolean
+          kind: Database["public"]["Enums"]["resource_kind"]
+          provider: string | null
+          sort_order: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_hours?: number | null
+          id?: string
+          is_free?: boolean
+          kind?: Database["public"]["Enums"]["resource_kind"]
+          provider?: string | null
+          sort_order?: number
+          subject_id: string
+          title_ar: string
+          title_en: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_hours?: number | null
+          id?: string
+          is_free?: boolean
+          kind?: Database["public"]["Enums"]["resource_kind"]
+          provider?: string | null
+          sort_order?: number
+          subject_id?: string
+          title_ar?: string
+          title_en?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          code: string
+          created_at: string
+          description_ar: string | null
+          description_en: string | null
+          icon: string | null
+          id: string
+          name_ar: string
+          name_en: string
+          semester: number
+          skills: string[]
+          sort_order: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          id?: string
+          name_ar: string
+          name_en: string
+          semester: number
+          skills?: string[]
+          sort_order?: number
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description_ar?: string | null
+          description_en?: string | null
+          icon?: string | null
+          id?: string
+          name_ar?: string
+          name_en?: string
+          semester?: number
+          skills?: string[]
+          sort_order?: number
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "student"
+      difficulty: "easy" | "medium" | "hard"
+      progress_item: "resource" | "project" | "challenge" | "quiz"
+      resource_kind: "course" | "video" | "book" | "article"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +501,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "student"],
+      difficulty: ["easy", "medium", "hard"],
+      progress_item: ["resource", "project", "challenge", "quiz"],
+      resource_kind: ["course", "video", "book", "article"],
+    },
   },
 } as const
