@@ -142,3 +142,83 @@
     color: var(--color-foreground);
   }
 }
+
+/* =============================================================
+ * InfoPath design system
+ * Modern academic-tech palette: deep navy + teal accent.
+ * Defined after the base tokens so these values win.
+ * ============================================================= */
+:root {
+  --radius: 0.9rem;
+  --background: oklch(0.99 0.005 220);
+  --foreground: oklch(0.21 0.045 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.21 0.045 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.21 0.045 250);
+  --primary: oklch(0.55 0.14 205);
+  --primary-foreground: oklch(0.99 0.005 220);
+  --secondary: oklch(0.96 0.015 220);
+  --secondary-foreground: oklch(0.28 0.06 250);
+  --muted: oklch(0.96 0.012 230);
+  --muted-foreground: oklch(0.53 0.03 245);
+  --accent: oklch(0.94 0.05 195);
+  --accent-foreground: oklch(0.28 0.08 220);
+  --border: oklch(0.91 0.015 230);
+  --input: oklch(0.91 0.015 230);
+  --ring: oklch(0.55 0.14 205);
+
+  /* Brand extras */
+  --brand-deep: oklch(0.24 0.07 255);
+  --brand-teal: oklch(0.72 0.14 190);
+  --gradient-hero: linear-gradient(135deg, oklch(0.24 0.07 255), oklch(0.42 0.12 215) 55%, oklch(0.62 0.13 195));
+  --gradient-accent: linear-gradient(90deg, oklch(0.55 0.14 205), oklch(0.72 0.14 190));
+  --shadow-soft: 0 12px 40px -18px oklch(0.24 0.07 255 / 35%);
+  --shadow-card: 0 2px 10px -4px oklch(0.24 0.07 255 / 18%);
+}
+
+.dark {
+  --background: oklch(0.17 0.035 255);
+  --foreground: oklch(0.96 0.01 230);
+  --card: oklch(0.22 0.04 255);
+  --card-foreground: oklch(0.96 0.01 230);
+  --popover: oklch(0.22 0.04 255);
+  --popover-foreground: oklch(0.96 0.01 230);
+  --primary: oklch(0.72 0.14 190);
+  --primary-foreground: oklch(0.18 0.04 255);
+  --secondary: oklch(0.27 0.045 255);
+  --secondary-foreground: oklch(0.96 0.01 230);
+  --muted: oklch(0.27 0.045 255);
+  --muted-foreground: oklch(0.72 0.03 235);
+  --accent: oklch(0.3 0.06 220);
+  --accent-foreground: oklch(0.96 0.01 230);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+  --ring: oklch(0.72 0.14 190);
+}
+
+@theme inline {
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-teal: var(--brand-teal);
+}
+
+@layer base {
+  body {
+    font-family: "Cairo", "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+  html[lang="en"] body {
+    font-family: "Plus Jakarta Sans", "Cairo", system-ui, sans-serif;
+  }
+}
+
+@utility bg-hero-gradient {
+  background-image: var(--gradient-hero);
+}
+
+@utility bg-accent-gradient {
+  background-image: var(--gradient-accent);
+}
+
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
