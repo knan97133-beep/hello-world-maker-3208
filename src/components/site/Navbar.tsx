@@ -50,10 +50,10 @@ export function Navbar() {
             {t("lang_switch")}
           </Button>
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
-            <a href="#start">{t("nav_login")}</a>
+            <Link to="/auth">{t("nav_login")}</Link>
           </Button>
           <Button size="sm" className="hidden sm:inline-flex" asChild>
-            <a href="#start">{t("nav_start")}</a>
+            <Link to="/auth">{t("nav_start")}</Link>
           </Button>
           <Button
             variant="ghost"
