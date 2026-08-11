@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   Shield,
+  Sparkles,
+
   User,
   X,
 } from "lucide-react";
@@ -29,8 +31,10 @@ type NavItem = { to: string; ar: string; en: string; icon: typeof BookOpen };
 const items: NavItem[] = [
   { to: "/dashboard", ar: "لوحة التحكم", en: "Dashboard", icon: LayoutDashboard },
   { to: "/subjects", ar: "المواد", en: "Subjects", icon: BookOpen },
+  { to: "/assistant", ar: "المساعد الذكي", en: "AI Assistant", icon: Sparkles },
   { to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { lang, toggle, t } = useI18n();
