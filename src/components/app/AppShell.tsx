@@ -14,6 +14,8 @@ import {
   LogOut,
   Menu,
   Shield,
+  Sparkles,
+
   User,
   X,
 } from "lucide-react";
