@@ -11,7 +11,9 @@ import { BookOpen, FolderKanban, Loader2, Pencil, Plus, Shield, Trash2, Users } 
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { ContentManager } from "@/components/app/ContentManager";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
