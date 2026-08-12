@@ -347,7 +347,10 @@ function AdminPage() {
           ))}
         </CardContent>
       </Card>
+
+      <ContentManager />
     </div>
+
   );
 }
 
