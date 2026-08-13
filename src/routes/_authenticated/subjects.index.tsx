@@ -5,11 +5,14 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CheckCircle2, Lock } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+import { useSession } from "@/lib/session";
+import { useUnlockState } from "@/lib/unlock";
 
 export const Route = createFileRoute("/_authenticated/subjects/")({
   head: () => ({
