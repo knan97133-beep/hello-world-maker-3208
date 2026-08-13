@@ -412,7 +412,7 @@ function Quiz({
 }: {
   ar: boolean;
   questions: QuizQuestion[];
-  onFinish: (score: number) => void;
+  onFinish: (correct: number, totalQuestions: number) => void;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
