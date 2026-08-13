@@ -7,7 +7,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookMarked, CheckCircle2, Circle, ExternalLink, Video } from "lucide-react";
+import { BookMarked, CheckCircle2, Circle, ExternalLink, Lock, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { PASS_MARK, useUnlockState } from "@/lib/unlock";
 
 export const Route = createFileRoute("/_authenticated/subjects/$code")({
   head: () => ({
@@ -44,6 +45,9 @@ function SubjectDetail() {
   const ar = lang === "ar";
   const { user } = useSession();
   const queryClient = useQueryClient();
+  const unlock = useUnlockState(user?.id);
+
+
 
   const subject = useQuery({
     queryKey: ["subject", code],
@@ -149,6 +153,25 @@ function SubjectDetail() {
   }
 
   const s = subject.data;
+
+  // Sequential progression: a locked term cannot be opened yet.
+  if (!unlock.loading && !unlock.isUnlocked(s.year, s.semester)) {
+    return (
+      <div className="mx-auto max-w-md rounded-2xl border border-border/70 bg-card p-8 text-center">
+        <Lock className="mx-auto size-8 text-muted-foreground" />
+        <h1 className="mt-3 text-xl font-bold">{ar ? "هذه المادة مقفلة" : "This subject is locked"}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {ar
+            ? `لفتح السنة ${s.year} / الفصل ${s.semester} عليك اجتياز اختبارات الفصل السابق بعلامة ${PASS_MARK}% على الأقل.`
+            : `To open Year ${s.year} / Semester ${s.semester} you must pass every quiz of the previous term with at least ${PASS_MARK}%.`}
+        </p>
+        <Button asChild className="mt-5">
+          <Link to="/subjects">{ar ? "العودة للمواد" : "Back to subjects"}</Link>
+        </Button>
+      </div>
+    );
+  }
+
   const total =
     (content.data?.resources.length ?? 0) +
     (content.data?.projects.length ?? 0) +
@@ -312,8 +335,10 @@ function SubjectDetail() {
           <Quiz
             ar={ar}
             questions={content.data.questions}
-            onFinish={async (score) => {
+            onFinish={async (correct, totalQuestions) => {
               if (!user || !subjectId) return;
+              // Stored as a percentage so unlocking rules can compare it to PASS_MARK.
+              const percentScore = Math.round((correct / totalQuestions) * 100);
               const { error } = await supabase.from("progress").upsert(
                 {
                   user_id: user.id,
@@ -321,13 +346,27 @@ function SubjectDetail() {
                   item_type: "quiz",
                   item_id: subjectId,
                   completed: true,
-                  score,
+                  score: percentScore,
                 },
                 { onConflict: "user_id,item_type,item_id" },
               );
-              if (error) toast.error(error.message);
-              else queryClient.invalidateQueries({ queryKey: ["subject-progress", subjectId, user.id] });
+              if (error) {
+                toast.error(error.message);
+                return;
+              }
+              queryClient.invalidateQueries({ queryKey: ["subject-progress", subjectId, user.id] });
+              queryClient.invalidateQueries({ queryKey: ["unlock-state", user.id] });
+              toast[percentScore >= PASS_MARK ? "success" : "error"](
+                percentScore >= PASS_MARK
+                  ? ar
+                    ? `نجحت بعلامة ${percentScore}%`
+                    : `Passed with ${percentScore}%`
+                  : ar
+                    ? `علامتك ${percentScore}% — تحتاج ${PASS_MARK}% للنجاح`
+                    : `You scored ${percentScore}% — ${PASS_MARK}% required`,
+              );
             }}
+
           />
         ) : (
           <Empty ar={ar} />
@@ -373,7 +412,7 @@ function Quiz({
 }: {
   ar: boolean;
   questions: QuizQuestion[];
-  onFinish: (score: number) => void;
+  onFinish: (correct: number, totalQuestions: number) => void;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
@@ -431,7 +470,7 @@ function Quiz({
         <Button
           onClick={() => {
             setSubmitted(true);
-            onFinish(score);
+            onFinish(score, questions.length);
           }}
           disabled={Object.keys(answers).length !== questions.length}
         >
