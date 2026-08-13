@@ -153,6 +153,25 @@ function SubjectDetail() {
   }
 
   const s = subject.data;
+
+  // Sequential progression: a locked term cannot be opened yet.
+  if (!unlock.loading && !unlock.isUnlocked(s.year, s.semester)) {
+    return (
+      <div className="mx-auto max-w-md rounded-2xl border border-border/70 bg-card p-8 text-center">
+        <Lock className="mx-auto size-8 text-muted-foreground" />
+        <h1 className="mt-3 text-xl font-bold">{ar ? "هذه المادة مقفلة" : "This subject is locked"}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {ar
+            ? `لفتح السنة ${s.year} / الفصل ${s.semester} عليك اجتياز اختبارات الفصل السابق بعلامة ${PASS_MARK}% على الأقل.`
+            : `To open Year ${s.year} / Semester ${s.semester} you must pass every quiz of the previous term with at least ${PASS_MARK}%.`}
+        </p>
+        <Button asChild className="mt-5">
+          <Link to="/subjects">{ar ? "العودة للمواد" : "Back to subjects"}</Link>
+        </Button>
+      </div>
+    );
+  }
+
   const total =
     (content.data?.resources.length ?? 0) +
     (content.data?.projects.length ?? 0) +
