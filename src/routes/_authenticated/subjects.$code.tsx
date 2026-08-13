@@ -470,7 +470,7 @@ function Quiz({
         <Button
           onClick={() => {
             setSubmitted(true);
-            onFinish(score);
+            onFinish(score, questions.length);
           }}
           disabled={Object.keys(answers).length !== questions.length}
         >
