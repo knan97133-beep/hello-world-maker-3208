@@ -335,8 +335,10 @@ function SubjectDetail() {
           <Quiz
             ar={ar}
             questions={content.data.questions}
-            onFinish={async (score) => {
+            onFinish={async (correct, totalQuestions) => {
               if (!user || !subjectId) return;
+              // Stored as a percentage so unlocking rules can compare it to PASS_MARK.
+              const percentScore = Math.round((correct / totalQuestions) * 100);
               const { error } = await supabase.from("progress").upsert(
                 {
                   user_id: user.id,
@@ -344,13 +346,27 @@ function SubjectDetail() {
                   item_type: "quiz",
                   item_id: subjectId,
                   completed: true,
-                  score,
+                  score: percentScore,
                 },
                 { onConflict: "user_id,item_type,item_id" },
               );
-              if (error) toast.error(error.message);
-              else queryClient.invalidateQueries({ queryKey: ["subject-progress", subjectId, user.id] });
+              if (error) {
+                toast.error(error.message);
+                return;
+              }
+              queryClient.invalidateQueries({ queryKey: ["subject-progress", subjectId, user.id] });
+              queryClient.invalidateQueries({ queryKey: ["unlock-state", user.id] });
+              toast[percentScore >= PASS_MARK ? "success" : "error"](
+                percentScore >= PASS_MARK
+                  ? ar
+                    ? `نجحت بعلامة ${percentScore}%`
+                    : `Passed with ${percentScore}%`
+                  : ar
+                    ? `علامتك ${percentScore}% — تحتاج ${PASS_MARK}% للنجاح`
+                    : `You scored ${percentScore}% — ${PASS_MARK}% required`,
+              );
             }}
+
           />
         ) : (
           <Empty ar={ar} />
