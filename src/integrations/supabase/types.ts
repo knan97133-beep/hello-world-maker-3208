@@ -288,6 +288,33 @@ export type Database = {
           },
         ]
       }
+      semester_unlocks: {
+        Row: {
+          created_at: string
+          granted_by: string | null
+          id: string
+          semester: number
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          semester: number
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          semester?: number
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
       subjects: {
         Row: {
           code: string
