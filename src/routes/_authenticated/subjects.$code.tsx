@@ -7,7 +7,7 @@
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { BookMarked, CheckCircle2, Circle, ExternalLink, Video } from "lucide-react";
+import { BookMarked, CheckCircle2, Circle, ExternalLink, Lock, Video } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { PASS_MARK, useUnlockState } from "@/lib/unlock";
 
 export const Route = createFileRoute("/_authenticated/subjects/$code")({
   head: () => ({
