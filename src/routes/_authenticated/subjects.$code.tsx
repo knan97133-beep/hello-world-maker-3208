@@ -45,6 +45,9 @@ function SubjectDetail() {
   const ar = lang === "ar";
   const { user } = useSession();
   const queryClient = useQueryClient();
+  const unlock = useUnlockState(user?.id);
+
+
 
   const subject = useQuery({
     queryKey: ["subject", code],
