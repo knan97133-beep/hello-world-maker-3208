@@ -37,6 +37,8 @@ function SubjectsPage() {
   const ar = lang === "ar";
   const [year, setYear] = useState<number | null>(null);
   const [semester, setSemester] = useState<number | null>(null);
+  const { user } = useSession();
+  const unlock = useUnlockState(user?.id);
 
   const subjects = useQuery({
     queryKey: ["all-subjects"],
