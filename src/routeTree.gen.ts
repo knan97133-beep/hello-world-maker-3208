@@ -18,6 +18,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPlaygroundRouteImport } from './routes/_authenticated/playground'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedSubjectsIndexRouteImport } from './routes/_authenticated/subjects.index'
 import { Route as AuthenticatedSubjectsCodeRouteImport } from './routes/_authenticated/subjects.$code'
 
@@ -65,6 +66,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedSubjectsIndexRoute =
   AuthenticatedSubjectsIndexRouteImport.update({
     id: '/subjects/',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/playground': typeof AuthenticatedPlaygroundRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/chat': typeof ApiChatRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
   '/subjects/': typeof AuthenticatedSubjectsIndexRoute
 }
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/playground': typeof AuthenticatedPlaygroundRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/api/chat': typeof ApiChatRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
   '/subjects': typeof AuthenticatedSubjectsIndexRoute
 }
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/playground': typeof AuthenticatedPlaygroundRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/api/chat': typeof ApiChatRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
   '/_authenticated/subjects/': typeof AuthenticatedSubjectsIndexRoute
 }
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/api/chat'
+    | '/.lovable/oauth/consent'
     | '/subjects/$code'
     | '/subjects/'
   fileRoutesByTo: FileRoutesByTo
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/api/chat'
+    | '/.lovable/oauth/consent'
     | '/subjects/$code'
     | '/subjects'
   id:
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_authenticated/playground'
     | '/_authenticated/profile'
     | '/api/chat'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/subjects/$code'
     | '/_authenticated/subjects/'
   fileRoutesById: FileRoutesById
@@ -161,6 +173,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ApiChatRoute: typeof ApiChatRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/subjects/': {
       id: '/_authenticated/subjects/'
       path: '/subjects'
@@ -273,6 +293,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ApiChatRoute: ApiChatRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
