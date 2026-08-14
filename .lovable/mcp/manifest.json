@@ -1,0 +1,144 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://muppqhqfrbipgrtnwilv.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "infopath",
+      "version": "0.1.0",
+      "title": "InfoPath"
+    },
+    "tools": [
+      {
+        "name": "list_subjects",
+        "title": "List subjects",
+        "description": "List InfoPath academic subjects, optionally filtered by study year and semester.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "year": {
+              "description": "Study year (1-5).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "semester": {
+              "description": "Semester (1 or 2).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_subject",
+        "title": "Get subject details",
+        "description": "Get one InfoPath subject by its code, including its resources (courses, videos, books), projects and challenges.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Subject code, e.g. CS101."
+            }
+          },
+          "required": [
+            "code"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "my_progress",
+        "title": "My progress",
+        "description": "Get the signed-in student's InfoPath profile and completed items (resources, projects, challenges, quizzes).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subject_code": {
+              "description": "Optional subject code to filter by.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "mark_complete",
+        "title": "Mark item complete",
+        "description": "Mark a resource, project, challenge or quiz as completed for the signed-in student in a given subject.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subject_code": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Subject code, e.g. CS101."
+            },
+            "item_type": {
+              "type": "string",
+              "enum": [
+                "resource",
+                "project",
+                "challenge",
+                "quiz"
+              ],
+              "description": "Kind of item being completed."
+            },
+            "item_id": {
+              "description": "UUID of the resource/project/challenge.",
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "score": {
+              "description": "Quiz score percentage.",
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          },
+          "required": [
+            "subject_code",
+            "item_type"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
