@@ -23,5 +23,7 @@ export default defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [listSubjects, getSubject, myProgress, markComplete],
+  // Cast: the SDK's tool type is invariant under exactOptionalPropertyTypes
+  // when a tool omits `outputSchema`.
+  tools: [listSubjects, getSubject, myProgress, markComplete] as never,
 });
