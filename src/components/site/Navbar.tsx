@@ -94,6 +94,12 @@ export function Navbar() {
                 <Link to="/auth">{t("nav_start")}</Link>
               </Button>
             </li>
+            <li className="mt-1">
+              <Button variant="ghost" size="sm" className="w-full" asChild>
+                <Link to="/admin-login">{ar ? "دخول المدير" : "Admin login"}</Link>
+              </Button>
+            </li>
+
           </ul>
         </div>
       )}
