@@ -18,7 +18,8 @@ const sections = [
 ];
 
 export function Navbar() {
-  const { t, toggle } = useI18n();
+  const { t, toggle, lang } = useI18n();
+  const ar = lang === "ar";
   const [open, setOpen] = useState(false);
 
   return (
