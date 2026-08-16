@@ -18,7 +18,8 @@ const sections = [
 ];
 
 export function Navbar() {
-  const { t, toggle } = useI18n();
+  const { t, toggle, lang } = useI18n();
+  const ar = lang === "ar";
   const [open, setOpen] = useState(false);
 
   return (
@@ -49,9 +50,13 @@ export function Navbar() {
             <Languages className="size-4" />
             {t("lang_switch")}
           </Button>
+          <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+            <Link to="/admin-login">{ar ? "دخول المدير" : "Admin login"}</Link>
+          </Button>
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
             <Link to="/auth">{t("nav_login")}</Link>
           </Button>
+
           <Button size="sm" className="hidden sm:inline-flex" asChild>
             <Link to="/auth">{t("nav_start")}</Link>
           </Button>
@@ -89,6 +94,12 @@ export function Navbar() {
                 <Link to="/auth">{t("nav_start")}</Link>
               </Button>
             </li>
+            <li className="mt-1">
+              <Button variant="ghost" size="sm" className="w-full" asChild>
+                <Link to="/admin-login">{ar ? "دخول المدير" : "Admin login"}</Link>
+              </Button>
+            </li>
+
           </ul>
         </div>
       )}
