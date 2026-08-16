@@ -50,9 +50,13 @@ export function Navbar() {
             <Languages className="size-4" />
             {t("lang_switch")}
           </Button>
+          <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+            <Link to="/admin-login">{ar ? "دخول المدير" : "Admin login"}</Link>
+          </Button>
           <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
             <Link to="/auth">{t("nav_login")}</Link>
           </Button>
+
           <Button size="sm" className="hidden sm:inline-flex" asChild>
             <Link to="/auth">{t("nav_start")}</Link>
           </Button>
