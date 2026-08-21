@@ -61,6 +61,53 @@ export type Database = {
           },
         ]
       }
+      placement_questions: {
+        Row: {
+          correct_index: number
+          created_at: string
+          id: string
+          level: Database["public"]["Enums"]["difficulty"]
+          options_ar: string[]
+          options_en: string[]
+          question_ar: string
+          question_en: string
+          skill_key: string
+          sort_order: number
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          options_ar: string[]
+          options_en: string[]
+          question_ar: string
+          question_en: string
+          skill_key: string
+          sort_order?: number
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          options_ar?: string[]
+          options_en?: string[]
+          question_ar?: string
+          question_en?: string
+          skill_key?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placement_questions_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -238,6 +285,69 @@ export type Database = {
           },
         ]
       }
+      recommendations: {
+        Row: {
+          action_type: string
+          body_ar: string | null
+          body_en: string | null
+          created_at: string
+          done: boolean
+          id: string
+          priority: number
+          skill_key: string | null
+          subject_id: string | null
+          title_ar: string
+          title_en: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          action_type?: string
+          body_ar?: string | null
+          body_en?: string | null
+          created_at?: string
+          done?: boolean
+          id?: string
+          priority?: number
+          skill_key?: string | null
+          subject_id?: string | null
+          title_ar: string
+          title_en: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          body_ar?: string | null
+          body_en?: string | null
+          created_at?: string
+          done?: boolean
+          id?: string
+          priority?: number
+          skill_key?: string | null
+          subject_id?: string | null
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendations_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "recommendations_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           created_at: string
@@ -315,6 +425,71 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_profile: {
+        Row: {
+          created_at: string
+          id: string
+          level: number
+          skill_key: string
+          source: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: number
+          skill_key: string
+          source?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: number
+          skill_key?: string
+          source?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_profile_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          created_at: string
+          icon: string | null
+          key: string
+          name_ar: string
+          name_en: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          key: string
+          name_ar: string
+          name_en: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          key?: string
+          name_ar?: string
+          name_en?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       subjects: {
         Row: {
           code: string
@@ -326,6 +501,7 @@ export type Database = {
           name_ar: string
           name_en: string
           semester: number
+          skill_key: string | null
           skills: string[]
           sort_order: number
           updated_at: string
@@ -341,6 +517,7 @@ export type Database = {
           name_ar: string
           name_en: string
           semester: number
+          skill_key?: string | null
           skills?: string[]
           sort_order?: number
           updated_at?: string
@@ -356,12 +533,21 @@ export type Database = {
           name_ar?: string
           name_en?: string
           semester?: number
+          skill_key?: string | null
           skills?: string[]
           sort_order?: number
           updated_at?: string
           year?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "subjects_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       user_roles: {
         Row: {
