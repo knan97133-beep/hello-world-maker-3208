@@ -120,6 +120,14 @@ function Dashboard() {
         />
       </div>
 
+      {/* The connected loop: skill profile -> AI recommendations */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SkillProfileCard />
+        <RecommendationsCard />
+      </div>
+
+
+
       {/* Year / semester picker */}
       <section className="rounded-2xl border border-border/70 bg-card p-5">
         <h2 className="text-lg font-bold">
