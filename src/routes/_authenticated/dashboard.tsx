@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Flame, Target, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
+import { RecommendationsCard, SkillProfileCard } from "@/components/app/LearningLoop";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
