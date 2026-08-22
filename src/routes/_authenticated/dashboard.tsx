@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, Flame, Target, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
+import { RecommendationsCard, SkillProfileCard } from "@/components/app/LearningLoop";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,6 +120,14 @@ function Dashboard() {
           value={subjectCount}
         />
       </div>
+
+      {/* The connected loop: skill profile -> AI recommendations */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <SkillProfileCard />
+        <RecommendationsCard />
+      </div>
+
+
 
       {/* Year / semester picker */}
       <section className="rounded-2xl border border-border/70 bg-card p-5">
