@@ -15,6 +15,7 @@ import {
   Menu,
   Shield,
   Sparkles,
+  Target,
 
   User,
   X,
@@ -30,6 +31,7 @@ type NavItem = { to: string; ar: string; en: string; icon: typeof BookOpen };
 
 const items: NavItem[] = [
   { to: "/dashboard", ar: "لوحة التحكم", en: "Dashboard", icon: LayoutDashboard },
+  { to: "/placement", ar: "تحديد المستوى", en: "Placement test", icon: Target },
   { to: "/subjects", ar: "المواد", en: "Subjects", icon: BookOpen },
   { to: "/assistant", ar: "المساعد الذكي", en: "AI Assistant", icon: Sparkles },
   { to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User },

@@ -113,7 +113,10 @@ export function RecommendationsCard() {
 
   async function toggleDone(id: string, done: boolean) {
     const { error } = await supabase.from("recommendations").update({ done }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     queryClient.invalidateQueries({ queryKey: ["recommendations", user?.id] });
   }
 

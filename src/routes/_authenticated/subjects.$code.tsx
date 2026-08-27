@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { refreshRecommendations, saveSkillLevels } from "@/lib/skills";
 import { PASS_MARK, useUnlockState } from "@/lib/unlock";
 
 export const Route = createFileRoute("/_authenticated/subjects/$code")({
@@ -365,6 +366,19 @@ function SubjectDetail() {
                     ? `علامتك ${percentScore}% — تحتاج ${PASS_MARK}% للنجاح`
                     : `You scored ${percentScore}% — ${PASS_MARK}% required`,
               );
+
+              // Close the loop: assessment -> skill level update -> new AI recommendations.
+              const skillKey = s.skill_key;
+              if (!skillKey) return;
+              try {
+                await saveSkillLevels(user.id, { [skillKey]: percentScore }, "assessment");
+                queryClient.invalidateQueries({ queryKey: ["skill-profile", user.id] });
+                await refreshRecommendations(user.id, ar ? "ar" : "en");
+                queryClient.invalidateQueries({ queryKey: ["recommendations", user.id] });
+                toast.success(ar ? "تم تحديث مستواك وتوصياتك" : "Skill level & recommendations updated");
+              } catch {
+                // Recommendations are a bonus: never block the quiz result on them.
+              }
             }}
 
           />
