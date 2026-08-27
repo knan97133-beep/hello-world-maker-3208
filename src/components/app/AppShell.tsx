@@ -15,6 +15,7 @@ import {
   Menu,
   Shield,
   Sparkles,
+  Target,
 
   User,
   X,
