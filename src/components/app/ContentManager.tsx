@@ -30,24 +30,31 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export function ContentManager() {
+/**
+ * @param subjectIds When provided, only these subjects can be edited
+ * (used by the instructor area, which is limited to assigned subjects).
+ */
+export function ContentManager({ subjectIds }: { subjectIds?: string[] } = {}) {
   const { lang } = useI18n();
   const ar = lang === "ar";
   const queryClient = useQueryClient();
   const [subjectId, setSubjectId] = useState<string>("");
 
   const subjects = useQuery({
-    queryKey: ["admin-subjects-select"],
+    queryKey: ["admin-subjects-select", subjectIds ?? "all"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("subjects")
         .select("id, code, name_ar, name_en, year, semester")
         .order("year")
         .order("semester");
+      if (subjectIds) query = query.in("id", subjectIds.length ? subjectIds : ["00000000-0000-0000-0000-000000000000"]);
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
   });
+
 
   const items = useQuery({
     queryKey: ["admin-content", subjectId],
