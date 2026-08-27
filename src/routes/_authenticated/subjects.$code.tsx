@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { refreshRecommendations, saveSkillLevels } from "@/lib/skills";
 import { PASS_MARK, useUnlockState } from "@/lib/unlock";
 
 export const Route = createFileRoute("/_authenticated/subjects/$code")({
