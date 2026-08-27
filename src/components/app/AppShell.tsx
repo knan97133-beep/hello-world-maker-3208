@@ -24,7 +24,7 @@ import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
-import { useIsAdmin, useSession, useSignOut } from "@/lib/session";
+import { useIsAdmin, useIsInstructor, useSession, useSignOut } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; ar: string; en: string; icon: typeof BookOpen };
@@ -43,13 +43,19 @@ export function AppShell({ children }: { children: ReactNode }) {
   const ar = lang === "ar";
   const { user } = useSession();
   const { data: isAdmin } = useIsAdmin(user?.id);
+  const { data: isInstructor } = useIsInstructor(user?.id);
   const signOut = useSignOut();
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
 
-  const nav = isAdmin
-    ? [...items, { to: "/admin", ar: "لوحة المدير", en: "Admin", icon: Shield }]
-    : items;
+  const nav = [
+    ...items,
+    ...(isInstructor || isAdmin
+      ? [{ to: "/instructor", ar: "منطقة المدرّس", en: "Instructor", icon: GraduationCap }]
+      : []),
+    ...(isAdmin ? [{ to: "/admin", ar: "لوحة المدير", en: "Admin", icon: Shield }] : []),
+  ];
+
 
   const links = (
     <nav className="flex flex-col gap-1">

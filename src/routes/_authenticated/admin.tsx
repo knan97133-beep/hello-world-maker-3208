@@ -12,6 +12,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { ContentManager } from "@/components/app/ContentManager";
+import { RoleManager } from "@/components/app/RoleManager";
 import { Button } from "@/components/ui/button";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -349,6 +350,8 @@ function AdminPage() {
           ))}
         </CardContent>
       </Card>
+
+      <RoleManager />
 
       <ContentManager />
     </div>
