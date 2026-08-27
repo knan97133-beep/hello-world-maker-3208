@@ -62,7 +62,8 @@ export const generateRecommendations = createServerFn({ method: "POST" })
         instructions: SYSTEM,
         input: [{ role: "user", content: [{ type: "input_text", text: prompt }] }],
         store: false,
-        max_completion_tokens: 2000,
+        stream: true,
+        max_output_tokens: 2000,
       }),
     });
 
@@ -73,18 +74,31 @@ export const generateRecommendations = createServerFn({ method: "POST" })
       throw new Error(text || `AI request failed (${res.status})`);
     }
 
-    const json = (await res.json()) as {
-      output_text?: string;
-      output?: { content?: { type: string; text?: string }[] }[];
-    };
-    const text =
-      json.output_text ??
-      json.output
-        ?.flatMap((o) => o.content ?? [])
-        .filter((c) => c.type === "output_text")
-        .map((c) => c.text ?? "")
-        .join("") ??
-      "";
+    // Reasoning runs take minutes, so the request streams; collect the text deltas.
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error("AI returned an empty response");
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let text = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        if (!line.startsWith("data:")) continue;
+        const payload = line.slice(5).trim();
+        if (!payload || payload === "[DONE]") continue;
+        try {
+          const evt = JSON.parse(payload) as { type?: string; delta?: string };
+          if (evt.type === "response.output_text.delta" && evt.delta) text += evt.delta;
+        } catch {
+          // Ignore keep-alive / partial frames.
+        }
+      }
+    }
+
 
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("AI returned an unreadable answer");
