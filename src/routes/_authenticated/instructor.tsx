@@ -113,6 +113,8 @@ function InstructorPage() {
         </CardContent>
       </Card>
 
+      <AiContentStudio subjectIds={subjectIds} />
+
       <ContentManager subjectIds={subjectIds} />
     </div>
   );
