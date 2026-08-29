@@ -11,7 +11,9 @@ import { BookOpen, FolderKanban, Loader2, Pencil, Plus, Shield, Trash2, Users } 
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
+import { PlacementManager } from "@/components/app/PlacementManager";
 import { RoleManager } from "@/components/app/RoleManager";
 import { Button } from "@/components/ui/button";
 
@@ -353,7 +355,12 @@ function AdminPage() {
 
       <RoleManager />
 
+      <PlacementManager />
+
+      <AiContentStudio />
+
       <ContentManager />
+
     </div>
 
   );

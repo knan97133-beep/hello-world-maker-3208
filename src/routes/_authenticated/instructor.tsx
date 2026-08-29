@@ -9,6 +9,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen, GraduationCap, Loader2 } from "lucide-react";
 
+import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
@@ -112,6 +113,8 @@ function InstructorPage() {
           })}
         </CardContent>
       </Card>
+
+      <AiContentStudio subjectIds={subjectIds} />
 
       <ContentManager subjectIds={subjectIds} />
     </div>

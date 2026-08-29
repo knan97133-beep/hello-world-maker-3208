@@ -12,6 +12,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
+import { saveSkillSnapshot } from "@/lib/learning-path";
 import { generateRecommendations } from "@/lib/recommend.functions";
 
 export type SkillRow = { key: string; name_ar: string; name_en: string; sort_order: number };
@@ -92,7 +93,25 @@ export async function saveSkillLevels(
     .from("skill_profile")
     .upsert(rows, { onConflict: "user_id,skill_key" });
   if (error) throw error;
+
+  // Keep the snapshots used by the final-assessment comparison up to date:
+  // the very first placement becomes the "initial" profile, every later write
+  // refreshes the "current" one.
+  const { data: after } = await supabase
+    .from("skill_profile")
+    .select("skill_key, level")
+    .eq("user_id", userId);
+  const map = Object.fromEntries((after ?? []).map((r) => [r.skill_key, r.level]));
+
+  const { count } = await supabase
+    .from("skill_snapshots")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("phase", "initial");
+  if (!count) await saveSkillSnapshot(userId, "initial", map);
+  await saveSkillSnapshot(userId, "current", map);
 }
+
 
 /**
  * Regenerates the AI recommendations from the current skill profile.
