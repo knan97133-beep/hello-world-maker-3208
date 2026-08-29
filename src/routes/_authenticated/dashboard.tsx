@@ -10,6 +10,11 @@ import { BookOpen, Flame, Target, Trophy } from "lucide-react";
 import { toast } from "sonner";
 
 import { RecommendationsCard, SkillProfileCard } from "@/components/app/LearningLoop";
+import {
+  CurrentGoalCard,
+  LearningPathCard,
+  ProgressEvolutionCard,
+} from "@/components/app/PathCards";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
