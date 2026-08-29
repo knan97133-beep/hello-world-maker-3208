@@ -16,6 +16,7 @@ import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useSession } from "@/lib/session";
+import { rebuildLearningPath } from "@/lib/learning-path";
 import { refreshRecommendations, saveSkillLevels } from "@/lib/skills";
 
 export const Route = createFileRoute("/_authenticated/placement")({
