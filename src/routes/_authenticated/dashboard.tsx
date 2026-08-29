@@ -121,11 +121,20 @@ function Dashboard() {
         />
       </div>
 
-      {/* The connected loop: skill profile -> AI recommendations */}
+      {/* The connected loop: skill profile -> goal -> path -> recommendations */}
       <div className="grid gap-4 lg:grid-cols-2">
         <SkillProfileCard />
-        <RecommendationsCard />
+        <CurrentGoalCard />
       </div>
+
+      <LearningPathCard />
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <RecommendationsCard />
+        <ProgressEvolutionCard />
+      </div>
+
+
 
 
 
