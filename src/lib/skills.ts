@@ -12,6 +12,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
+import { saveSkillSnapshot } from "@/lib/learning-path";
 import { generateRecommendations } from "@/lib/recommend.functions";
 
 export type SkillRow = { key: string; name_ar: string; name_en: string; sort_order: number };
