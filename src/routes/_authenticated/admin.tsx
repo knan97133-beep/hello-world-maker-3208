@@ -353,7 +353,12 @@ function AdminPage() {
 
       <RoleManager />
 
+      <PlacementManager />
+
+      <AiContentStudio />
+
       <ContentManager />
+
     </div>
 
   );
