@@ -80,14 +80,24 @@ function PlacementPage() {
         levels[s.key] = b && b.total ? Math.round((b.correct / b.total) * 100) : 0;
       }
 
+      // Skill Profile (the placement result is the starting point, not a list of links).
       await saveSkillLevels(user.id, levels, "placement");
       queryClient.invalidateQueries({ queryKey: ["skill-profile", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["skill-snapshots", user.id] });
 
+      // Learning Goals + Personalized Learning Path from published platform content.
+      toast.info(ar ? "جارٍ بناء مسارك الشخصي…" : "Building your personal path…");
+      await rebuildLearningPath(user.id);
+      queryClient.invalidateQueries({ queryKey: ["learning-goals", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["learning-path", user.id] });
+
+      // Optional extras on top of the required path.
       toast.info(ar ? "جارٍ توليد التوصيات الذكية…" : "Generating AI recommendations…");
       await refreshRecommendations(user.id, ar ? "ar" : "en");
       queryClient.invalidateQueries({ queryKey: ["recommendations", user.id] });
 
       toast.success(ar ? "تم بناء ملف مهاراتك ومسارك" : "Your skill profile and path are ready");
+
       navigate({ to: "/dashboard" });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
