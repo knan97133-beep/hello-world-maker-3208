@@ -121,6 +121,15 @@ export function LearningPathCard() {
   const goals = useLearningGoals(user?.id);
   const skills = useSkills();
   const profile = useSkillProfile(user?.id);
+  const subjects = useQuery({
+    queryKey: ["path-subjects"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subjects").select("id, code, name_ar, name_en");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [busy, setBusy] = useState(false);
   const [advancing, setAdvancing] = useState(false);
 
