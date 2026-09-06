@@ -61,16 +61,32 @@ export function useReviewQueue(subjectIds: string[], enabled = true) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("submissions")
-        .select("*, profiles:user_id(full_name), subjects:subject_id(code, name_ar, name_en)")
+        .select("*, subjects:subject_id(code, name_ar, name_en)")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as (Submission & {
-        profiles: { full_name: string | null } | null;
+      const rows = (data ?? []) as (Submission & {
         subjects: { code: string; name_ar: string; name_en: string } | null;
       })[];
+
+      // student names come from `profiles` (no FK between submissions and profiles)
+      const ids = [...new Set(rows.map((r) => r.user_id))];
+      const names = new Map<string, string | null>();
+      if (ids.length > 0) {
+        const { data: people } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", ids);
+        for (const p of people ?? []) names.set(p.id, p.full_name);
+      }
+
+      return rows.map((r) => ({
+        ...r,
+        profiles: { full_name: names.get(r.user_id) ?? null },
+      }));
     },
   });
 }
+
 
 /** The student sends a solution for a path step / project / challenge. */
 export async function submitWork(input: {
