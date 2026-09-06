@@ -878,6 +878,78 @@ export type Database = {
           },
         ]
       }
+      submissions: {
+        Row: {
+          content: string | null
+          created_at: string
+          feedback: string | null
+          grade: number | null
+          id: string
+          item_id: string | null
+          item_type: Database["public"]["Enums"]["progress_item"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          skill_key: string | null
+          status: string
+          subject_id: string | null
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          feedback?: string | null
+          grade?: number | null
+          id?: string
+          item_id?: string | null
+          item_type?: Database["public"]["Enums"]["progress_item"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          skill_key?: string | null
+          status?: string
+          subject_id?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          feedback?: string | null
+          grade?: number | null
+          id?: string
+          item_id?: string | null
+          item_type?: Database["public"]["Enums"]["progress_item"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          skill_key?: string | null
+          status?: string
+          subject_id?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submissions_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "submissions_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
