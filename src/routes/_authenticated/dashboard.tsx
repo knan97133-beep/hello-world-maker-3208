@@ -1,23 +1,21 @@
 /**
  * _authenticated/dashboard.tsx — /dashboard
  * -------------------------------------------------------------
- * Student home: greeting, year/semester picker, progress summary
- * and quick links into the subjects of the selected semester.
+ * Student home: skill profile (weakest first), the single active goal,
+ * the personalised path built from instructor-published content, and
+ * the level evolution after each assessment.
  */
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookOpen, Flame, Target, Trophy } from "lucide-react";
-import { toast } from "sonner";
+import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { BookOpen, Target, Trophy } from "lucide-react";
 
-import { RecommendationsCard, SkillProfileCard } from "@/components/app/LearningLoop";
+import { SkillProfileCard } from "@/components/app/LearningLoop";
 import {
   CurrentGoalCard,
   LearningPathCard,
   ProgressEvolutionCard,
 } from "@/components/app/PathCards";
 import { MySubmissionsCard } from "@/components/app/SubmissionCards";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useProfile, useSession } from "@/lib/session";
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       {
         name: "description",
         content:
-          "Your InfoPath dashboard: pick your academic year and semester, track completion and jump into your subjects.",
+          "Your InfoPath dashboard: see your skill profile, the weakest area to start from and your personalised learning path.",
       },
       { property: "og:title", content: "InfoPath Dashboard" },
       { property: "og:description", content: "Track your IT study roadmap progress." },
@@ -40,32 +38,11 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
-const years = [1, 2, 3, 4, 5];
-const semesters = [1, 2];
-
 function Dashboard() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   const { user } = useSession();
   const { data: profile } = useProfile(user?.id);
-  const queryClient = useQueryClient();
-
-  const year = profile?.current_year ?? 1;
-  const semester = profile?.current_semester ?? 1;
-
-  const subjects = useQuery({
-    queryKey: ["subjects", year, semester],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("subjects")
-        .select("*")
-        .eq("year", year)
-        .eq("semester", semester)
-        .order("sort_order");
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const progress = useQuery({
     queryKey: ["progress", user?.id],
@@ -80,22 +57,9 @@ function Dashboard() {
     },
   });
 
-  async function updatePlan(patch: { current_year?: number; current_semester?: number }) {
-    if (!user) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update(patch)
-      .eq("id", user.id);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
-  }
-
   const done = progress.data?.filter((p) => p.completed).length ?? 0;
   const quizzes = progress.data?.filter((p) => p.item_type === "quiz").length ?? 0;
-  const subjectCount = subjects.data?.length ?? 0;
+  const subjectsTouched = new Set((progress.data ?? []).map((p) => p.subject_id)).size;
 
   return (
     <div className="space-y-8">
@@ -122,12 +86,12 @@ function Dashboard() {
         />
         <StatCard
           icon={<BookOpen className="size-5" />}
-          label={ar ? "مواد هذا الفصل" : "Subjects this term"}
-          value={subjectCount}
+          label={ar ? "مواد بدأت بها" : "Subjects started"}
+          value={subjectsTouched}
         />
       </div>
 
-      {/* The connected loop: skill profile -> goal -> path -> recommendations */}
+      {/* The connected loop: skill profile -> goal -> path -> evolution */}
       <div className="grid gap-4 lg:grid-cols-2">
         <SkillProfileCard />
         <CurrentGoalCard />
@@ -137,104 +101,7 @@ function Dashboard() {
 
       <MySubmissionsCard />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <RecommendationsCard />
-        <ProgressEvolutionCard />
-      </div>
-
-
-
-
-
-      {/* Year / semester picker */}
-      <section className="rounded-2xl border border-border/70 bg-card p-5">
-        <h2 className="text-lg font-bold">
-          {ar ? "اختر سنتك وفصلك الدراسي" : "Choose your year & semester"}
-        </h2>
-        <div className="mt-4 space-y-4">
-          <div>
-            <p className="mb-2 text-sm text-muted-foreground">
-              {ar ? "السنة الدراسية" : "Academic year"}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {years.map((y) => (
-                <Button
-                  key={y}
-                  size="sm"
-                  variant={y === year ? "default" : "outline"}
-                  onClick={() => updatePlan({ current_year: y })}
-                >
-                  {ar ? `السنة ${y}` : `Year ${y}`}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 text-sm text-muted-foreground">
-              {ar ? "الفصل الدراسي" : "Semester"}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {semesters.map((s) => (
-                <Button
-                  key={s}
-                  size="sm"
-                  variant={s === semester ? "default" : "outline"}
-                  onClick={() => updatePlan({ current_semester: s })}
-                >
-                  {ar ? `الفصل ${s}` : `Semester ${s}`}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Subjects of the selected semester */}
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold">{ar ? "مواد الفصل" : "Semester subjects"}</h2>
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/subjects">{ar ? "كل المواد" : "All subjects"}</Link>
-          </Button>
-        </div>
-        {subjects.isLoading ? (
-          <p className="text-sm text-muted-foreground">{ar ? "جارِ التحميل…" : "Loading…"}</p>
-        ) : subjectCount === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            {ar ? "لا توجد مواد لهذا الفصل بعد." : "No subjects for this semester yet."}
-          </p>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {subjects.data!.map((s) => {
-              const items = progress.data?.filter((p) => p.subject_id === s.id).length ?? 0;
-              return (
-                <Link
-                  key={s.id}
-                  to="/subjects/$code"
-                  params={{ code: s.code }}
-                  className="group rounded-2xl border border-border/70 bg-card p-5 transition-shadow hover:shadow-md"
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-bold group-hover:text-primary">
-                      {ar ? s.name_ar : s.name_en}
-                    </h3>
-                    <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-mono">
-                      {s.code}
-                    </span>
-                  </div>
-                  <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-                    {ar ? s.description_ar : s.description_en}
-                  </p>
-                  <div className="mt-4 flex items-center gap-2">
-                    <Progress value={Math.min(items * 20, 100)} className="h-2" />
-                    <Flame className="size-4 text-muted-foreground" />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
+      <ProgressEvolutionCard />
     </div>
   );
 }
