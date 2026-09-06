@@ -12,6 +12,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
+  ArrowRight,
   BookOpen,
   CheckCircle2,
   ClipboardCheck,
@@ -23,7 +24,7 @@ import {
   Swords,
   TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ import {
 } from "@/lib/learning-path";
 import { useSession } from "@/lib/session";
 import { useSkillProfile, useSkills } from "@/lib/skills";
+import { advanceLearningPath, applyGradedSubmissions } from "@/lib/submissions";
 
 const stepIcon = {
   resource: BookOpen,
