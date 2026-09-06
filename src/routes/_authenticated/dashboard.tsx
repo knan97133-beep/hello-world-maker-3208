@@ -15,6 +15,7 @@ import {
   LearningPathCard,
   ProgressEvolutionCard,
 } from "@/components/app/PathCards";
+import { MySubmissionsCard } from "@/components/app/SubmissionCards";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
@@ -133,6 +134,8 @@ function Dashboard() {
       </div>
 
       <LearningPathCard />
+
+      <MySubmissionsCard />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <RecommendationsCard />

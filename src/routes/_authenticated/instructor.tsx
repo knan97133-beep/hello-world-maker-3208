@@ -11,6 +11,7 @@ import { BookOpen, GraduationCap, Loader2 } from "lucide-react";
 
 import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
+import { SubmissionReviewCard } from "@/components/app/SubmissionCards";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
 import { useIsAdmin, useIsInstructor, useMySubjects, useSession } from "@/lib/session";
@@ -113,6 +114,8 @@ function InstructorPage() {
           })}
         </CardContent>
       </Card>
+
+      <SubmissionReviewCard subjectIds={subjectIds} />
 
       <AiContentStudio subjectIds={subjectIds} />
 
