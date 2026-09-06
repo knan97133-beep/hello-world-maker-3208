@@ -12,6 +12,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import {
+  ArrowRight,
   BookOpen,
   CheckCircle2,
   ClipboardCheck,
@@ -23,7 +24,7 @@ import {
   Swords,
   TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ import {
 } from "@/lib/learning-path";
 import { useSession } from "@/lib/session";
 import { useSkillProfile, useSkills } from "@/lib/skills";
+import { advanceLearningPath, applyGradedSubmissions } from "@/lib/submissions";
 
 const stepIcon = {
   resource: BookOpen,
@@ -109,21 +111,66 @@ export function CurrentGoalCard() {
   );
 }
 
-/** The ordered personalised learning path. */
+/** The ordered personalised learning path (one active path at a time). */
 export function LearningPathCard() {
   const { lang } = useI18n();
   const ar = lang === "ar";
   const { user } = useSession();
   const queryClient = useQueryClient();
   const path = useLearningPath(user?.id);
+  const goals = useLearningGoals(user?.id);
   const skills = useSkills();
   const profile = useSkillProfile(user?.id);
   const [busy, setBusy] = useState(false);
+  const [advancing, setAdvancing] = useState(false);
 
-  const items = path.data ?? [];
+  const all = path.data ?? [];
+  const currentGoal = (goals.data ?? []).filter((g) => g.status === "active")[0];
+  // Only ONE path is visible: the steps of the current goal.
+  const scoped = currentGoal ? all.filter((i) => i.skill_key === currentGoal.skill_key) : [];
+  const items = scoped.length > 0 ? scoped : all;
   const doneCount = items.filter((i) => i.status === "done").length;
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
   const hasProfile = (profile.data?.length ?? 0) > 0;
+  const allDone = items.length > 0 && doneCount === items.length;
+
+  // Graded instructor feedback feeds the skill profile before anything else.
+  useEffect(() => {
+    if (!user) return;
+    applyGradedSubmissions(user.id)
+      .then((n) => {
+        if (n > 0) {
+          queryClient.invalidateQueries({ queryKey: ["skill-profile", user.id] });
+          queryClient.invalidateQueries({ queryKey: ["progress", user.id] });
+        }
+      })
+      .catch(() => undefined);
+  }, [user, queryClient]);
+
+  async function goNext() {
+    if (!user) return;
+    setAdvancing(true);
+    try {
+      const moved = await advanceLearningPath(user.id, ar ? "ar" : "en");
+      queryClient.invalidateQueries({ queryKey: ["learning-path", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["learning-goals", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["recommendations", user.id] });
+      queryClient.invalidateQueries({ queryKey: ["skill-snapshots", user.id] });
+      toast.success(
+        moved
+          ? ar
+            ? "تم فتح المسار التالي حسب أولويات الذكاء الاصطناعي"
+            : "Next path opened based on the AI priority"
+          : ar
+            ? "أكمل كل خطوات المسار الحالي أولاً"
+            : "Finish every step of the current path first",
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setAdvancing(false);
+    }
+  }
 
   async function rebuild() {
     if (!user) return;
@@ -174,6 +221,25 @@ export function LearningPathCard() {
           </span>
         </div>
       )}
+
+      {allDone && (
+        <div className="mt-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
+          <p className="text-sm font-semibold">
+            {ar
+              ? "أنهيت المسار الحالي — جاهز للانتقال إلى المهارة التالية."
+              : "Current path finished — ready to move to the next skill."}
+          </p>
+          <Button size="sm" className="mt-2" onClick={goNext} disabled={advancing}>
+            {advancing ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <ArrowRight className="size-4" />
+            )}
+            {ar ? "المسار التالي" : "Next path"}
+          </Button>
+        </div>
+      )}
+
 
       {!hasProfile ? (
         <p className="mt-4 text-sm text-muted-foreground">
