@@ -9,8 +9,9 @@
  * The path only contains published content the instructor linked to a skill,
  * so it is never a random list of links.
  */
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+
 import {
   ArrowRight,
   BookOpen,
