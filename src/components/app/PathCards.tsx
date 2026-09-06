@@ -270,8 +270,10 @@ export function LearningPathCard() {
           {items.map((item, index) => {
             const Icon = stepIcon[item.item_type] ?? BookOpen;
             const skill = (skills.data ?? []).find((s) => s.key === item.skill_key);
+            const subject = (subjects.data ?? []).find((s) => s.id === item.subject_id);
             const body = ar ? item.body_ar : item.body_en;
             const isLink = typeof body === "string" && body.startsWith("http");
+            const title = ar ? item.title_ar : item.title_en;
             return (
               <li
                 key={item.id}
@@ -282,7 +284,17 @@ export function LearningPathCard() {
                     <p className="flex items-center gap-2 font-semibold">
                       <span className="text-xs text-muted-foreground">{index + 1}.</span>
                       <Icon className="size-4 text-primary" />
-                      {ar ? item.title_ar : item.title_en}
+                      {subject ? (
+                        <Link
+                          to="/subjects/$code"
+                          params={{ code: subject.code }}
+                          className="hover:text-primary hover:underline"
+                        >
+                          {title}
+                        </Link>
+                      ) : (
+                        title
+                      )}
                     </p>
                     {body && !isLink && (
                       <p className="mt-1 text-sm text-muted-foreground">{body}</p>
@@ -305,8 +317,18 @@ export function LearningPathCard() {
                           {ar ? skill.name_ar : skill.name_en}
                         </span>
                       )}
+                      {subject && (
+                        <Link
+                          to="/subjects/$code"
+                          params={{ code: subject.code }}
+                          className="rounded-md bg-primary/10 px-2 py-0.5 font-medium text-primary"
+                        >
+                          {ar ? subject.name_ar : subject.name_en}
+                        </Link>
+                      )}
                     </div>
                   </div>
+
                   <Button
                     variant={item.status === "done" ? "secondary" : "outline"}
                     size="sm"
