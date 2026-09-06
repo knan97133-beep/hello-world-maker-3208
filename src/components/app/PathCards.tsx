@@ -9,8 +9,9 @@
  * The path only contains published content the instructor linked to a skill,
  * so it is never a random list of links.
  */
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+
 import {
   ArrowRight,
   BookOpen,
@@ -29,7 +30,9 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
+
 import {
   rebuildLearningPath,
   setPathItemStatus,
@@ -121,6 +124,15 @@ export function LearningPathCard() {
   const goals = useLearningGoals(user?.id);
   const skills = useSkills();
   const profile = useSkillProfile(user?.id);
+  const subjects = useQuery({
+    queryKey: ["path-subjects"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("subjects").select("id, code, name_ar, name_en");
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const [busy, setBusy] = useState(false);
   const [advancing, setAdvancing] = useState(false);
 
@@ -258,8 +270,10 @@ export function LearningPathCard() {
           {items.map((item, index) => {
             const Icon = stepIcon[item.item_type] ?? BookOpen;
             const skill = (skills.data ?? []).find((s) => s.key === item.skill_key);
+            const subject = (subjects.data ?? []).find((s) => s.id === item.subject_id);
             const body = ar ? item.body_ar : item.body_en;
             const isLink = typeof body === "string" && body.startsWith("http");
+            const title = ar ? item.title_ar : item.title_en;
             return (
               <li
                 key={item.id}
@@ -270,7 +284,17 @@ export function LearningPathCard() {
                     <p className="flex items-center gap-2 font-semibold">
                       <span className="text-xs text-muted-foreground">{index + 1}.</span>
                       <Icon className="size-4 text-primary" />
-                      {ar ? item.title_ar : item.title_en}
+                      {subject ? (
+                        <Link
+                          to="/subjects/$code"
+                          params={{ code: subject.code }}
+                          className="hover:text-primary hover:underline"
+                        >
+                          {title}
+                        </Link>
+                      ) : (
+                        title
+                      )}
                     </p>
                     {body && !isLink && (
                       <p className="mt-1 text-sm text-muted-foreground">{body}</p>
@@ -293,8 +317,18 @@ export function LearningPathCard() {
                           {ar ? skill.name_ar : skill.name_en}
                         </span>
                       )}
+                      {subject && (
+                        <Link
+                          to="/subjects/$code"
+                          params={{ code: subject.code }}
+                          className="rounded-md bg-primary/10 px-2 py-0.5 font-medium text-primary"
+                        >
+                          {ar ? subject.name_ar : subject.name_en}
+                        </Link>
+                      )}
                     </div>
                   </div>
+
                   <Button
                     variant={item.status === "done" ? "secondary" : "outline"}
                     size="sm"
@@ -312,12 +346,18 @@ export function LearningPathCard() {
 
       <p className="mt-4 text-xs text-muted-foreground">
         {ar
-          ? "المسار = محتوى أساسي مخصص لك. التوصيات = مواد إضافية اختيارية."
-          : "Path = your required personalised content. Recommendations = optional extras."}
+          ? "المسار مبني من محتوى نشره الأستاذ لمهارتك الأضعف — انقر على أي خطوة لفتح المادة."
+          : "The path is built from the content your instructor published for your weakest skill — click a step to open the subject."}
       </p>
-      <Button variant="ghost" size="sm" className="mt-2" asChild>
-        <Link to="/subjects">{ar ? "تصفح كل المواد" : "Browse all subjects"}</Link>
-      </Button>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/subjects">{ar ? "تصفح كل المواد" : "Browse all subjects"}</Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/placement">{ar ? "إعادة الاختبار لقياس تقدمي" : "Retake test to measure progress"}</Link>
+        </Button>
+      </div>
+
     </section>
   );
 }

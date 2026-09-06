@@ -57,21 +57,42 @@ export function SkillProfileCard() {
             : "No level measured yet. Take the placement test so the AI can build your path."}
         </p>
       ) : (
-        <ul className="mt-4 space-y-3">
-          {(skills.data ?? []).map((s) => {
-            const level = levels.get(s.key) ?? 0;
-            return (
-              <li key={s.key}>
-                <div className="mb-1 flex items-center justify-between text-sm">
-                  <span className="font-medium">{ar ? s.name_ar : s.name_en}</span>
-                  <span className="text-muted-foreground">{level}%</span>
-                </div>
-                <Progress value={level} className="h-2" />
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {ar
+              ? "المهارات مرتبة من الأضعف إلى الأقوى — تبدأ من الأضعف، وعند التساوي تبدأ بالمهارة الأساس."
+              : "Skills are ordered weakest first — ties start from the more foundational skill."}
+          </p>
+          <ul className="mt-4 space-y-3">
+            {[...(skills.data ?? [])]
+              .sort((a, b) => {
+                const la = levels.get(a.key) ?? 0;
+                const lb = levels.get(b.key) ?? 0;
+                return la - lb || a.sort_order - b.sort_order;
+              })
+              .map((s, index) => {
+                const level = levels.get(s.key) ?? 0;
+                return (
+                  <li key={s.key}>
+                    <div className="mb-1 flex items-center justify-between gap-2 text-sm">
+                      <span className="font-medium">
+                        {ar ? s.name_ar : s.name_en}
+                        {index === 0 && (
+                          <span className="ms-2 rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                            {ar ? "ابدأ من هنا" : "Start here"}
+                          </span>
+                        )}
+                      </span>
+                      <span className="text-muted-foreground">{level}%</span>
+                    </div>
+                    <Progress value={level} className="h-2" />
+                  </li>
+                );
+              })}
+          </ul>
+        </>
       )}
+
     </section>
   );
 }
