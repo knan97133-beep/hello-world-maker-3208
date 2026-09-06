@@ -346,12 +346,18 @@ export function LearningPathCard() {
 
       <p className="mt-4 text-xs text-muted-foreground">
         {ar
-          ? "المسار = محتوى أساسي مخصص لك. التوصيات = مواد إضافية اختيارية."
-          : "Path = your required personalised content. Recommendations = optional extras."}
+          ? "المسار مبني من محتوى نشره الأستاذ لمهارتك الأضعف — انقر على أي خطوة لفتح المادة."
+          : "The path is built from the content your instructor published for your weakest skill — click a step to open the subject."}
       </p>
-      <Button variant="ghost" size="sm" className="mt-2" asChild>
-        <Link to="/subjects">{ar ? "تصفح كل المواد" : "Browse all subjects"}</Link>
-      </Button>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/subjects">{ar ? "تصفح كل المواد" : "Browse all subjects"}</Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
+          <Link to="/placement">{ar ? "إعادة الاختبار لقياس تقدمي" : "Retake test to measure progress"}</Link>
+        </Button>
+      </div>
+
     </section>
   );
 }
