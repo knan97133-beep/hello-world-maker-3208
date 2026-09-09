@@ -222,9 +222,18 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
   for (const g of goals ?? []) {
     const now = levels[g.skill_key] ?? 0;
     if (now >= (g.target_level ?? 70)) {
+      // improved enough -> close it, the next weakest skill becomes the goal
       await supabase.from("learning_goals").update({ status: "reached" }).eq("id", g.id);
+    } else {
+      // not improved -> repeat the same skill: re-open its steps
+      await supabase
+        .from("learning_path_items")
+        .update({ status: "todo" })
+        .eq("user_id", userId)
+        .eq("skill_key", g.skill_key);
     }
   }
+
 
   await rebuildLearningPath(userId);
   try {
