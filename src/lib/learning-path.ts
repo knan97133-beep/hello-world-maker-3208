@@ -241,7 +241,9 @@ export async function rebuildLearningPath(userId: string) {
 
     // 0) The subjects of this skill come first: the student opens the subject
     //    page and studies whatever the instructor published there.
-    const skillSubjects = (subjects.data ?? []).filter((s) => s.skill_key === skill.key);
+    const skillSubjects = (subjects.data ?? []).filter(
+      (s) => s.skill_key === skill.key && withContent.has(s.id),
+    );
     for (const s of skillSubjects) {
       if (keptSet.has(`resource:${s.id}`)) continue;
       rows.push({
