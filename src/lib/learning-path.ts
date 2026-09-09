@@ -322,7 +322,9 @@ export async function rebuildLearningPath(userId: string) {
     }
 
     // …and finally the subject assessment that measures the skill again.
-    const subject = (subjects.data ?? []).find((s) => s.skill_key === skill.key);
+    const subject = (subjects.data ?? []).find(
+      (s) => s.skill_key === skill.key && quizSubjects.has(s.id),
+    );
     if (subject && !keptSet.has(`quiz:${subject.id}`)) {
       rows.push({
         user_id: userId,
