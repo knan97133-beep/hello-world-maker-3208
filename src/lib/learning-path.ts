@@ -185,8 +185,15 @@ export async function rebuildLearningPath(userId: string) {
       .in("skill_key", keys)
       .eq("status", "published")
       .order("sort_order"),
-    supabase.from("subjects").select("id, code, name_ar, name_en, skill_key").in("skill_key", keys),
+    supabase
+      .from("subjects")
+      .select("id, code, name_ar, name_en, description_ar, description_en, skill_key, year, semester, sort_order")
+      .in("skill_key", keys)
+      .order("year")
+      .order("semester")
+      .order("sort_order"),
   ]);
+
 
   // 3) Keep finished steps, rebuild the open ones.
   await supabase
