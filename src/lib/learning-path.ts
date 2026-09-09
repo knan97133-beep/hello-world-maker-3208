@@ -185,8 +185,15 @@ export async function rebuildLearningPath(userId: string) {
       .in("skill_key", keys)
       .eq("status", "published")
       .order("sort_order"),
-    supabase.from("subjects").select("id, code, name_ar, name_en, skill_key").in("skill_key", keys),
+    supabase
+      .from("subjects")
+      .select("id, code, name_ar, name_en, description_ar, description_en, skill_key, year, semester, sort_order")
+      .in("skill_key", keys)
+      .order("year")
+      .order("semester")
+      .order("sort_order"),
   ]);
+
 
   // 3) Keep finished steps, rebuild the open ones.
   await supabase
@@ -214,7 +221,30 @@ export async function rebuildLearningPath(userId: string) {
       return (preferred.length ? preferred : arr).slice(0, max);
     };
 
-    // Course / video / book first…
+    // 0) The subjects of this skill come first: the student opens the subject
+    //    page and studies whatever the instructor published there.
+    const skillSubjects = (subjects.data ?? []).filter((s) => s.skill_key === skill.key);
+    for (const s of skillSubjects) {
+      if (keptSet.has(`resource:${s.id}`)) continue;
+      rows.push({
+        user_id: userId,
+        goal_id: gid,
+        skill_key: skill.key,
+        subject_id: s.id,
+        item_type: "resource",
+        item_id: s.id,
+        title_ar: `المادة: ${s.name_ar}`,
+        title_en: `Subject: ${s.name_en}`,
+        body_ar: s.description_ar ?? "افتح المادة وتابع المحتوى الذي جهّزه الأستاذ (كورس، فيديو، كتاب، مشروع، تحدي).",
+        body_en:
+          s.description_en ?? "Open the subject and follow the content your instructor prepared (course, video, book, project, challenge).",
+        level: want,
+        step_order: order++,
+      });
+    }
+
+    // Course / video / book next…
+
     for (const r of pick((resources.data ?? []).filter((x) => x.skill_key === skill.key), 2)) {
       if (keptSet.has(`resource:${r.id}`)) continue;
       rows.push({
