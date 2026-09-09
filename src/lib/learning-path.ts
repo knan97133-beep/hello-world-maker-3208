@@ -195,6 +195,24 @@ export async function rebuildLearningPath(userId: string) {
   ]);
 
 
+  // 2b) Only subjects the instructor actually filled with published content
+  //     belong in the path — an empty subject would be a dead end.
+  const subjectIds = (subjects.data ?? []).map((s) => s.id);
+  const withContent = new Set<string>();
+  const quizSubjects = new Set<string>();
+  if (subjectIds.length > 0) {
+    const [sr, sp, sc, sq] = await Promise.all([
+      supabase.from("resources").select("subject_id").in("subject_id", subjectIds).eq("status", "published"),
+      supabase.from("projects").select("subject_id").in("subject_id", subjectIds).eq("status", "published"),
+      supabase.from("challenges").select("subject_id").in("subject_id", subjectIds).eq("status", "published"),
+      supabase.from("quiz_questions").select("subject_id").in("subject_id", subjectIds).eq("status", "published"),
+    ]);
+    for (const list of [sr.data, sp.data, sc.data, sq.data]) {
+      for (const row of list ?? []) if (row.subject_id) withContent.add(row.subject_id);
+    }
+    for (const row of sq.data ?? []) if (row.subject_id) quizSubjects.add(row.subject_id);
+  }
+
   // 3) Keep finished steps, rebuild the open ones.
   await supabase
     .from("learning_path_items")
@@ -223,7 +241,9 @@ export async function rebuildLearningPath(userId: string) {
 
     // 0) The subjects of this skill come first: the student opens the subject
     //    page and studies whatever the instructor published there.
-    const skillSubjects = (subjects.data ?? []).filter((s) => s.skill_key === skill.key);
+    const skillSubjects = (subjects.data ?? []).filter(
+      (s) => s.skill_key === skill.key && withContent.has(s.id),
+    );
     for (const s of skillSubjects) {
       if (keptSet.has(`resource:${s.id}`)) continue;
       rows.push({
@@ -302,7 +322,9 @@ export async function rebuildLearningPath(userId: string) {
     }
 
     // …and finally the subject assessment that measures the skill again.
-    const subject = (subjects.data ?? []).find((s) => s.skill_key === skill.key);
+    const subject = (subjects.data ?? []).find(
+      (s) => s.skill_key === skill.key && quizSubjects.has(s.id),
+    );
     if (subject && !keptSet.has(`quiz:${subject.id}`)) {
       rows.push({
         user_id: userId,
