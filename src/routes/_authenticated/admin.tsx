@@ -15,6 +15,7 @@ import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
 import { PlacementManager } from "@/components/app/PlacementManager";
 import { SubmissionReviewCard } from "@/components/app/SubmissionCards";
+import { StudentProgressCard } from "@/components/app/StudentProgressCard";
 import { RoleManager } from "@/components/app/RoleManager";
 import { Button } from "@/components/ui/button";
 
@@ -355,6 +356,8 @@ function AdminPage() {
       </Card>
 
       <RoleManager />
+
+      <StudentProgressCard subjectIds={[]} />
 
       <SubmissionReviewCard subjectIds={[]} />
 
