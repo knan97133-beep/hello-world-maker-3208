@@ -1015,6 +1015,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_my_student: {
+        Args: { _instructor: string; _student: string }
+        Returns: boolean
+      }
       is_subject_instructor: {
         Args: { _subject_id: string; _user_id: string }
         Returns: boolean
