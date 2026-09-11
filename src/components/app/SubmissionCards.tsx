@@ -28,11 +28,78 @@ import { useLearningPath } from "@/lib/learning-path";
 import { useSession } from "@/lib/session";
 import {
   reviewSubmission,
+  sendSubmissionMessage,
   submitWork,
   useMySubmissions,
   useReviewQueue,
+  useSubmissionMessages,
   type SubmissionStatus,
 } from "@/lib/submissions";
+
+/** Two-way conversation between the student and the instructor on a submission. */
+function SubmissionThread({ submissionId, ar }: { submissionId: string; ar: boolean }) {
+  const { user } = useSession();
+  const queryClient = useQueryClient();
+  const messages = useSubmissionMessages(submissionId);
+  const [text, setText] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function post() {
+    if (!user || !text.trim()) return;
+    setBusy(true);
+    try {
+      await sendSubmissionMessage({ submissionId, senderId: user.id, body: text });
+      setText("");
+      queryClient.invalidateQueries({ queryKey: ["submission-messages", submissionId] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="mt-3 rounded-xl bg-secondary/40 p-3">
+      <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+        <MessageSquare className="size-3.5" />
+        {ar ? "المحادثة مع الأستاذ" : "Conversation"}
+      </p>
+      <div className="mt-2 space-y-2">
+        {(messages.data ?? []).length === 0 && (
+          <p className="text-xs text-muted-foreground">
+            {ar ? "لا توجد رسائل بعد." : "No messages yet."}
+          </p>
+        )}
+        {(messages.data ?? []).map((m) => (
+          <div
+            key={m.id}
+            className={`rounded-lg px-3 py-2 text-sm ${
+              m.sender_id === user?.id ? "bg-primary/10" : "bg-card border border-border/70"
+            }`}
+          >
+            <p className="whitespace-pre-wrap">{m.body}</p>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              {new Date(m.created_at).toLocaleString(ar ? "ar" : "en")}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-2 flex gap-2">
+        <Input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={ar ? "اكتب رسالة…" : "Write a message…"}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") void post();
+          }}
+        />
+        <Button size="sm" onClick={post} disabled={busy || !text.trim()}>
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 const statusLabel = (status: string, ar: boolean) =>
   status === "pending"
