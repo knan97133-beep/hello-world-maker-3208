@@ -88,6 +88,101 @@ export function useReviewQueue(subjectIds: string[], enabled = true) {
 }
 
 
+export type SubmissionMessage = {
+  id: string;
+  submission_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};
+
+/** The conversation between the student and the instructor on one submission. */
+export function useSubmissionMessages(submissionId: string | undefined) {
+  return useQuery({
+    queryKey: ["submission-messages", submissionId],
+    enabled: Boolean(submissionId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("submission_messages")
+        .select("*")
+        .eq("submission_id", submissionId!)
+        .order("created_at");
+      if (error) throw error;
+      return (data ?? []) as SubmissionMessage[];
+    },
+  });
+}
+
+/** Posts one message (student question or instructor note) on a submission. */
+export async function sendSubmissionMessage(input: {
+  submissionId: string;
+  senderId: string;
+  body: string;
+}) {
+  const body = input.body.trim();
+  if (!body) return;
+  const { error } = await supabase.from("submission_messages").insert({
+    submission_id: input.submissionId,
+    sender_id: input.senderId,
+    body,
+  });
+  if (error) throw error;
+}
+
+/** Progress of every student who submitted work in the instructor's subjects. */
+export function useStudentsProgress(subjectIds: string[], enabled = true) {
+  return useQuery({
+    queryKey: ["students-progress", [...subjectIds].sort().join(",")],
+    enabled,
+    queryFn: async () => {
+      const { data: subs, error } = await supabase
+        .from("submissions")
+        .select("id, user_id, title, status, grade, skill_key, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      const rows = subs ?? [];
+      const ids = [...new Set(rows.map((r) => r.user_id))];
+      if (ids.length === 0) return [];
+
+      const [people, levels, goals, steps] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, university").in("id", ids),
+        supabase.from("skill_profile").select("user_id, skill_key, level").in("user_id", ids),
+        supabase
+          .from("learning_goals")
+          .select("user_id, skill_key, status, priority")
+          .in("user_id", ids)
+          .eq("status", "active"),
+        supabase.from("learning_path_items").select("user_id, status").in("user_id", ids),
+      ]);
+
+      return ids.map((id) => {
+        const mySteps = (steps.data ?? []).filter((s) => s.user_id === id);
+        const done = mySteps.filter((s) => s.status === "done").length;
+        const graded = rows.filter((r) => r.user_id === id && r.grade !== null);
+        return {
+          userId: id,
+          name: (people.data ?? []).find((p) => p.id === id)?.full_name ?? null,
+          university: (people.data ?? []).find((p) => p.id === id)?.university ?? null,
+          skills: (levels.data ?? [])
+            .filter((l) => l.user_id === id)
+            .sort((a, b) => a.level - b.level),
+          currentGoal:
+            (goals.data ?? [])
+              .filter((g) => g.user_id === id)
+              .sort((a, b) => a.priority - b.priority)[0]?.skill_key ?? null,
+          pathDone: done,
+          pathTotal: mySteps.length,
+          submissions: rows.filter((r) => r.user_id === id),
+          averageGrade:
+            graded.length > 0
+              ? Math.round(graded.reduce((sum, g) => sum + (g.grade ?? 0), 0) / graded.length)
+              : null,
+        };
+      });
+    },
+  });
+}
+
 /** The student sends a solution for a path step / project / challenge. */
 export async function submitWork(input: {
   userId: string;
