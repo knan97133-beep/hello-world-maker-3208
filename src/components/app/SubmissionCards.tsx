@@ -8,7 +8,7 @@
  * Skill Profile, so instructor follow-up feeds the adaptive loop.
  */
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, ClipboardList, Loader2, Send, Star } from "lucide-react";
+import { CheckCircle2, ClipboardList, Loader2, MessageSquare, Send, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -242,6 +242,7 @@ export function MySubmissionsCard() {
               </p>
             )}
             {s.feedback && <p className="mt-1 text-sm text-muted-foreground">{s.feedback}</p>}
+            <SubmissionThread submissionId={s.id} ar={ar} />
           </div>
         ))}
       </div>
@@ -394,6 +395,8 @@ function ReviewRow({
           </Select>
         </div>
       </div>
+
+      <SubmissionThread submissionId={submission.id} ar={ar} />
 
       <Button className="mt-3" size="sm" onClick={save} disabled={busy}>
         {busy ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
