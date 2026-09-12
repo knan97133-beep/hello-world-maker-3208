@@ -144,7 +144,7 @@ export function useStudentsProgress(subjectIds: string[], enabled = true) {
       const ids = [...new Set(rows.map((r) => r.user_id))];
       if (ids.length === 0) return [];
 
-      const [people, levels, goals, steps] = await Promise.all([
+      const [people, levels, goals, steps, updates] = await Promise.all([
         supabase.from("profiles").select("id, full_name, university").in("id", ids),
         supabase.from("skill_profile").select("user_id, skill_key, level").in("user_id", ids),
         supabase
@@ -152,13 +152,24 @@ export function useStudentsProgress(subjectIds: string[], enabled = true) {
           .select("user_id, skill_key, status, priority")
           .in("user_id", ids)
           .eq("status", "active"),
-        supabase.from("learning_path_items").select("user_id, status").in("user_id", ids),
+        supabase
+          .from("learning_path_items")
+          .select("id, user_id, status, title_ar, title_en, started_at, progress_percent, step_order")
+          .in("user_id", ids)
+          .order("step_order"),
+        supabase
+          .from("path_updates")
+          .select("id, user_id, author_id, body, percent, created_at")
+          .in("user_id", ids)
+          .order("created_at", { ascending: false }),
       ]);
 
       return ids.map((id) => {
         const mySteps = (steps.data ?? []).filter((s) => s.user_id === id);
         const done = mySteps.filter((s) => s.status === "done").length;
         const graded = rows.filter((r) => r.user_id === id && r.grade !== null);
+        const current = mySteps.find((s) => s.status !== "done") ?? null;
+        const myUpdates = (updates.data ?? []).filter((u) => u.user_id === id);
         return {
           userId: id,
           name: (people.data ?? []).find((p) => p.id === id)?.full_name ?? null,
@@ -170,6 +181,9 @@ export function useStudentsProgress(subjectIds: string[], enabled = true) {
             (goals.data ?? [])
               .filter((g) => g.user_id === id)
               .sort((a, b) => a.priority - b.priority)[0]?.skill_key ?? null,
+          currentStep: current,
+          lastUpdate: myUpdates[0] ?? null,
+          updates: myUpdates.slice(0, 5),
           pathDone: done,
           pathTotal: mySteps.length,
           submissions: rows.filter((r) => r.user_id === id),
@@ -179,8 +193,7 @@ export function useStudentsProgress(subjectIds: string[], enabled = true) {
               : null,
         };
       });
-    },
-  });
+
 }
 
 /** The student sends a solution for a path step / project / challenge. */
