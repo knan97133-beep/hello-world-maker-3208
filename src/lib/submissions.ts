@@ -193,8 +193,10 @@ export function useStudentsProgress(subjectIds: string[], enabled = true) {
               : null,
         };
       });
-
+    },
+  });
 }
+
 
 /** The student sends a solution for a path step / project / challenge. */
 export async function submitWork(input: {
