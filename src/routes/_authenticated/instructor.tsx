@@ -11,6 +11,7 @@ import { BookOpen, GraduationCap, Loader2 } from "lucide-react";
 
 import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
+import { PathTemplateBuilder } from "@/components/app/PathTemplateBuilder";
 import { SubmissionReviewCard } from "@/components/app/SubmissionCards";
 import { StudentProgressCard } from "@/components/app/StudentProgressCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -119,6 +120,8 @@ function InstructorPage() {
       <StudentProgressCard subjectIds={subjectIds} />
 
       <SubmissionReviewCard subjectIds={subjectIds} />
+
+      <PathTemplateBuilder subjectIds={subjectIds} />
 
       <AiContentStudio subjectIds={subjectIds} />
 
