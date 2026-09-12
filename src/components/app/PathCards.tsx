@@ -20,8 +20,11 @@ import {
   Flag,
   FolderGit2,
   Loader2,
+  MessageSquare,
+  PlayCircle,
   RefreshCw,
   Route as RouteIcon,
+  Send,
   Swords,
   TrendingUp,
 } from "lucide-react";
@@ -29,22 +32,27 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 
 import {
   rebuildLearningPath,
+  sendPathUpdate,
   setPathItemStatus,
   TARGET_LEVEL,
   useLearningGoals,
   useLearningPath,
+  usePathUpdates,
   useSkillSnapshots,
   type PathItem,
 } from "@/lib/learning-path";
 import { useSession } from "@/lib/session";
 import { useSkillProfile, useSkills } from "@/lib/skills";
-import { advanceLearningPath, applyGradedSubmissions } from "@/lib/submissions";
+import { advanceLearningPath, applyGradedSubmissions, useMySubmissions } from "@/lib/submissions";
+
 
 const stepIcon = {
   resource: BookOpen,
