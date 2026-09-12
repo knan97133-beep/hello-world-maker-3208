@@ -310,6 +310,274 @@ export function LearningPathCard() {
   );
 }
 
+/**
+ * One step of the path. A step is never closed with a bare "done":
+ *  - project / challenge : needs a submission the instructor graded
+ *  - course / video / book / assessment : needs a short "what I learned" note
+ * The student also posts progress updates the instructor can answer.
+ */
+function PathStep({
+  item,
+  index,
+  ar,
+  subject,
+  skillName,
+  onChanged,
+}: {
+  item: PathItem;
+  index: number;
+  ar: boolean;
+  subject: { id: string; code: string; name_ar: string; name_en: string } | null;
+  skillName: string | null;
+  onChanged: () => void;
+}) {
+  const { user } = useSession();
+  const queryClient = useQueryClient();
+  const updates = usePathUpdates(user?.id, item.id);
+  const submissions = useMySubmissions(user?.id);
+  const [open, setOpen] = useState(false);
+  const [percent, setPercent] = useState(String(item.progress_percent ?? 0));
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const body = ar ? item.body_ar : item.body_en;
+  const isLink = typeof body === "string" && body.startsWith("http");
+  const title = ar ? item.title_ar : item.title_en;
+  const Icon = stepIcon[item.item_type] ?? BookOpen;
+
+  const needsSubmission = item.item_type === "project" || item.item_type === "challenge";
+  const mine = (submissions.data ?? []).filter((s) => s.item_id === item.item_id);
+  const graded = mine.find((s) => s.status === "reviewed" || s.status === "completed");
+  const pending = mine.find((s) => s.status === "pending");
+  const hasNote = Boolean(item.progress_note && item.progress_note.trim().length > 0);
+  const canFinish = needsSubmission ? Boolean(graded) : hasNote;
+
+  const statusLabel: Record<string, string> = {
+    todo: ar ? "لم يبدأ" : "Not started",
+    in_progress: ar ? "قيد العمل" : "In progress",
+    submitted: ar ? "بانتظار المراجعة" : "Waiting for review",
+    done: ar ? "مكتمل" : "Completed",
+  };
+  const effectiveStatus =
+    item.status === "done" ? "done" : needsSubmission && pending && !graded ? "submitted" : item.status;
+
+  async function start() {
+    setBusy(true);
+    try {
+      await setPathItemStatus(item.id, "in_progress");
+      onChanged();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function postUpdate() {
+    if (!user || !note.trim()) return;
+    setBusy(true);
+    try {
+      await sendPathUpdate({
+        studentId: user.id,
+        authorId: user.id,
+        pathItemId: item.id,
+        skillKey: item.skill_key,
+        percent: Number(percent) || 0,
+        body: note,
+      });
+      setNote("");
+      queryClient.invalidateQueries({ queryKey: ["path-updates", user.id, item.id] });
+      if (item.status === "todo") await setPathItemStatus(item.id, "in_progress");
+      onChanged();
+      toast.success(ar ? "تم إرسال تحديث تقدّمك للأستاذ" : "Progress update sent to your instructor");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function finish() {
+    if (!canFinish) {
+      toast.error(
+        needsSubmission
+          ? ar
+            ? "أرسل تسليمك أولاً وانتظر تقييم الأستاذ."
+            : "Submit your work first and wait for the instructor's grade."
+          : ar
+            ? "اكتب تحديث تقدّم قصير قبل إغلاق الخطوة."
+            : "Write a short progress note before closing this step.",
+      );
+      setOpen(true);
+      return;
+    }
+    setBusy(true);
+    try {
+      await setPathItemStatus(item.id, "done");
+      onChanged();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <li
+      className={`rounded-xl border border-border/70 p-4 ${item.status === "done" ? "opacity-60" : ""}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 font-semibold">
+            <span className="text-xs text-muted-foreground">{index + 1}.</span>
+            <Icon className="size-4 text-primary" />
+            {subject ? (
+              <Link
+                to="/subjects/$code"
+                params={{ code: subject.code }}
+                className="hover:text-primary hover:underline"
+              >
+                {title}
+              </Link>
+            ) : (
+              title
+            )}
+          </p>
+          {body && !isLink && <p className="mt-1 text-sm text-muted-foreground">{body}</p>}
+          {isLink && (
+            <a
+              href={body}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 block truncate text-sm text-primary underline"
+            >
+              {body}
+            </a>
+          )}
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="rounded-md bg-primary/10 px-2 py-0.5 font-medium text-primary">
+              {statusLabel[effectiveStatus] ?? effectiveStatus}
+            </span>
+            <span className="rounded-md bg-secondary px-2 py-0.5">{item.item_type}</span>
+            <span className="rounded-md bg-secondary px-2 py-0.5">{item.level}</span>
+            {skillName && <span className="rounded-md bg-secondary px-2 py-0.5">{skillName}</span>}
+            {subject && (
+              <Link
+                to="/subjects/$code"
+                params={{ code: subject.code }}
+                className="rounded-md bg-primary/10 px-2 py-0.5 font-medium text-primary"
+              >
+                {ar ? subject.name_ar : subject.name_en}
+              </Link>
+            )}
+            {item.started_at && (
+              <span>
+                {ar ? "بدأت في" : "Started"}{" "}
+                {new Date(item.started_at).toLocaleDateString(ar ? "ar" : "en")}
+              </span>
+            )}
+          </div>
+          {(item.progress_percent ?? 0) > 0 && item.status !== "done" && (
+            <div className="mt-2 flex items-center gap-2">
+              <Progress value={item.progress_percent} className="h-1.5" />
+              <span className="shrink-0 text-xs text-muted-foreground">{item.progress_percent}%</span>
+            </div>
+          )}
+        </div>
+
+        <div className="flex shrink-0 flex-col gap-2">
+          {item.status === "todo" && (
+            <Button variant="outline" size="sm" onClick={start} disabled={busy}>
+              <PlayCircle className="size-4" />
+              {ar ? "بدأت العمل" : "Start"}
+            </Button>
+          )}
+          <Button
+            variant={item.status === "done" ? "secondary" : "outline"}
+            size="sm"
+            onClick={finish}
+            disabled={busy || item.status === "done"}
+          >
+            <CheckCircle2 className="size-4" />
+            {item.status === "done" ? (ar ? "منجز" : "Done") : ar ? "إنهاء" : "Finish"}
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => setOpen((v) => !v)}>
+            <MessageSquare className="size-4" />
+            {ar ? "تحديث تقدّمي" : "Progress"}
+          </Button>
+        </div>
+      </div>
+
+      {needsSubmission && item.status !== "done" && (
+        <p className="mt-2 text-xs text-muted-foreground">
+          {graded
+            ? ar
+              ? `قيّم الأستاذ تسليمك (${graded.grade ?? 0}/100) — يمكنك إنهاء الخطوة.`
+              : `Your instructor graded your work (${graded.grade ?? 0}/100) — you can finish this step.`
+            : pending
+              ? ar
+                ? "تسليمك بانتظار مراجعة الأستاذ."
+                : "Your submission is waiting for the instructor's review."
+              : ar
+                ? "هذه الخطوة تُغلق بتسليم عملك ومراجعة الأستاذ له من قسم «تسليماتي»."
+                : "This step closes with a submission reviewed by your instructor in “My submissions”."}
+        </p>
+      )}
+
+      {open && (
+        <div className="mt-3 rounded-xl bg-secondary/40 p-3">
+          <p className="text-xs font-semibold text-muted-foreground">
+            {ar
+              ? "ماذا أنجزت؟ وأين تعثّرت؟ (يراه الأستاذ ويرد عليك)"
+              : "What did you do? Where are you stuck? (your instructor sees and replies)"}
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            <Input
+              type="number"
+              min={0}
+              max={100}
+              value={percent}
+              onChange={(e) => setPercent(e.target.value)}
+              className="w-24"
+            />
+            <span className="text-xs text-muted-foreground">% {ar ? "منجز" : "complete"}</span>
+          </div>
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={3}
+            className="mt-2"
+            placeholder={ar ? "مثال: أنهيت واجهة المشروع، متعثر في قاعدة البيانات…" : "e.g. Finished the UI, stuck on the database…"}
+          />
+          <Button size="sm" className="mt-2" onClick={postUpdate} disabled={busy || !note.trim()}>
+            {busy ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+            {ar ? "إرسال التحديث" : "Send update"}
+          </Button>
+
+          <div className="mt-3 space-y-2">
+            {(updates.data ?? []).map((u) => (
+              <div
+                key={u.id}
+                className={`rounded-lg px-3 py-2 text-sm ${
+                  u.author_id === user?.id ? "bg-primary/10" : "border border-border/70 bg-card"
+                }`}
+              >
+                <p className="whitespace-pre-wrap">{u.body}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {u.author_id === user?.id ? (ar ? "أنا" : "Me") : ar ? "الأستاذ" : "Instructor"} ·{" "}
+                  {u.percent}% · {new Date(u.created_at).toLocaleString(ar ? "ar" : "en")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </li>
+  );
+}
+
+
+
 /** Initial vs current vs final skill profile — the "student evolution" view. */
 export function ProgressEvolutionCard() {
   const { lang } = useI18n();
