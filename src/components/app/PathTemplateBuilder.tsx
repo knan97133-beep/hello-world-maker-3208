@@ -14,7 +14,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -51,8 +50,6 @@ export function PathTemplateBuilder({ subjectIds }: { subjectIds?: string[] } = 
     queryKey: ["template-content", skillKey, subjectIds ?? "all"],
     enabled: Boolean(skillKey),
     queryFn: async () => {
-      const only = (q: ReturnType<typeof supabase.from>) => q;
-      void only;
       const scoped = <T,>(rows: T[] | null, get: (r: T) => string | null) =>
         (rows ?? []).filter((r) => !subjectIds || subjectIds.includes(get(r) ?? ""));
 
@@ -397,8 +394,6 @@ export function PathTemplateBuilder({ subjectIds }: { subjectIds?: string[] } = 
           </div>
         </>
       )}
-
-      <Input type="hidden" value="" readOnly className="hidden" />
     </section>
   );
 }
