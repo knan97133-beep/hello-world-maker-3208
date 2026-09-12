@@ -122,14 +122,19 @@ export async function saveSkillSnapshot(
 
 /** Marks a path step done (and re-opens it when `done` is false). */
 export async function setPathItemStatus(id: string, status: PathStatus) {
-  const patch: Record<string, unknown> = { status };
-  if (status === "in_progress") patch['started_at'] = new Date().toISOString();
+  const patch: {
+    status: string;
+    started_at?: string | null;
+    progress_percent?: number;
+  } = { status };
+  if (status === "in_progress") patch.started_at = new Date().toISOString();
   if (status === "todo") {
-    patch['started_at'] = null;
-    patch['progress_percent'] = 0;
+    patch.started_at = null;
+    patch.progress_percent = 0;
   }
-  if (status === "done") patch['progress_percent'] = 100;
+  if (status === "done") patch.progress_percent = 100;
   const { error } = await supabase.from("learning_path_items").update(patch).eq("id", id);
+
   if (error) throw error;
 }
 
