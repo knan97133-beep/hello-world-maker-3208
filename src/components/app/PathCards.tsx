@@ -215,10 +215,9 @@ export function LearningPathCard() {
     }
   }
 
-  async function toggle(item: PathItem) {
-    await setPathItemStatus(item.id, item.status === "done" ? "todo" : "done");
+  const invalidatePath = () =>
     queryClient.invalidateQueries({ queryKey: ["learning-path", user?.id] });
-  }
+
 
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-5">
@@ -270,87 +269,28 @@ export function LearningPathCard() {
       ) : items.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">
           {ar
-            ? "اضغط «إعادة البناء» لتوليد خطوات المسار من محتوى المنصة."
-            : "Press “Rebuild” to generate the steps from the platform content."}
+            ? "مسار هذه المهارة قيد التجهيز من الأستاذ — سيظهر هنا فور نشره."
+            : "Your instructor is still preparing this skill's path — it appears here once published."}
         </p>
       ) : (
         <ol className="mt-4 space-y-3">
-          {items.map((item, index) => {
-            const Icon = stepIcon[item.item_type] ?? BookOpen;
-            const skill = (skills.data ?? []).find((s) => s.key === item.skill_key);
-            const subject = (subjects.data ?? []).find((s) => s.id === item.subject_id);
-            const body = ar ? item.body_ar : item.body_en;
-            const isLink = typeof body === "string" && body.startsWith("http");
-            const title = ar ? item.title_ar : item.title_en;
-            return (
-              <li
-                key={item.id}
-                className={`rounded-xl border border-border/70 p-4 ${item.status === "done" ? "opacity-60" : ""}`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="flex items-center gap-2 font-semibold">
-                      <span className="text-xs text-muted-foreground">{index + 1}.</span>
-                      <Icon className="size-4 text-primary" />
-                      {subject ? (
-                        <Link
-                          to="/subjects/$code"
-                          params={{ code: subject.code }}
-                          className="hover:text-primary hover:underline"
-                        >
-                          {title}
-                        </Link>
-                      ) : (
-                        title
-                      )}
-                    </p>
-                    {body && !isLink && (
-                      <p className="mt-1 text-sm text-muted-foreground">{body}</p>
-                    )}
-                    {isLink && (
-                      <a
-                        href={body}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-1 block truncate text-sm text-primary underline"
-                      >
-                        {body}
-                      </a>
-                    )}
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                      <span className="rounded-md bg-secondary px-2 py-0.5">{item.item_type}</span>
-                      <span className="rounded-md bg-secondary px-2 py-0.5">{item.level}</span>
-                      {skill && (
-                        <span className="rounded-md bg-secondary px-2 py-0.5">
-                          {ar ? skill.name_ar : skill.name_en}
-                        </span>
-                      )}
-                      {subject && (
-                        <Link
-                          to="/subjects/$code"
-                          params={{ code: subject.code }}
-                          className="rounded-md bg-primary/10 px-2 py-0.5 font-medium text-primary"
-                        >
-                          {ar ? subject.name_ar : subject.name_en}
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  <Button
-                    variant={item.status === "done" ? "secondary" : "outline"}
-                    size="sm"
-                    onClick={() => toggle(item)}
-                  >
-                    <CheckCircle2 className="size-4" />
-                    {item.status === "done" ? (ar ? "منجز" : "Done") : ar ? "تم" : "Mark done"}
-                  </Button>
-                </div>
-              </li>
-            );
-          })}
+          {items.map((item, index) => (
+            <PathStep
+              key={item.id}
+              item={item}
+              index={index}
+              ar={ar}
+              subject={(subjects.data ?? []).find((s) => s.id === item.subject_id) ?? null}
+              skillName={(() => {
+                const s = (skills.data ?? []).find((x) => x.key === item.skill_key);
+                return s ? (ar ? s.name_ar : s.name_en) : null;
+              })()}
+              onChanged={invalidatePath}
+            />
+          ))}
         </ol>
       )}
+
 
       <p className="mt-4 text-xs text-muted-foreground">
         {ar
