@@ -15,6 +15,7 @@ import { AiContentStudio } from "@/components/app/AiContentStudio";
 import { ContentManager } from "@/components/app/ContentManager";
 import { PlacementManager } from "@/components/app/PlacementManager";
 import { SubmissionReviewCard } from "@/components/app/SubmissionCards";
+import { PathTemplateBuilder } from "@/components/app/PathTemplateBuilder";
 import { StudentProgressCard } from "@/components/app/StudentProgressCard";
 import { RoleManager } from "@/components/app/RoleManager";
 import { Button } from "@/components/ui/button";
@@ -362,6 +363,8 @@ function AdminPage() {
       <SubmissionReviewCard subjectIds={[]} />
 
       <PlacementManager />
+
+      <PathTemplateBuilder />
 
       <AiContentStudio />
 

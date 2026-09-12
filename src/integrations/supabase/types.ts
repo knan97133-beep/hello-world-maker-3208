@@ -191,7 +191,10 @@ export type Database = {
           item_id: string | null
           item_type: Database["public"]["Enums"]["progress_item"]
           level: Database["public"]["Enums"]["difficulty"]
+          progress_note: string | null
+          progress_percent: number
           skill_key: string | null
+          started_at: string | null
           status: string
           step_order: number
           subject_id: string | null
@@ -209,7 +212,10 @@ export type Database = {
           item_id?: string | null
           item_type?: Database["public"]["Enums"]["progress_item"]
           level?: Database["public"]["Enums"]["difficulty"]
+          progress_note?: string | null
+          progress_percent?: number
           skill_key?: string | null
+          started_at?: string | null
           status?: string
           step_order?: number
           subject_id?: string | null
@@ -227,7 +233,10 @@ export type Database = {
           item_id?: string | null
           item_type?: Database["public"]["Enums"]["progress_item"]
           level?: Database["public"]["Enums"]["difficulty"]
+          progress_note?: string | null
+          progress_percent?: number
           skill_key?: string | null
+          started_at?: string | null
           status?: string
           step_order?: number
           subject_id?: string | null
@@ -257,6 +266,158 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "subjects"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      path_template_items: {
+        Row: {
+          body_ar: string | null
+          body_en: string | null
+          created_at: string
+          id: string
+          item_id: string | null
+          item_type: Database["public"]["Enums"]["progress_item"]
+          level: Database["public"]["Enums"]["difficulty"]
+          step_order: number
+          subject_id: string | null
+          template_id: string
+          title_ar: string
+          title_en: string
+        }
+        Insert: {
+          body_ar?: string | null
+          body_en?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_type: Database["public"]["Enums"]["progress_item"]
+          level?: Database["public"]["Enums"]["difficulty"]
+          step_order?: number
+          subject_id?: string | null
+          template_id: string
+          title_ar?: string
+          title_en?: string
+        }
+        Update: {
+          body_ar?: string | null
+          body_en?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          item_type?: Database["public"]["Enums"]["progress_item"]
+          level?: Database["public"]["Enums"]["difficulty"]
+          step_order?: number
+          subject_id?: string | null
+          template_id?: string
+          title_ar?: string
+          title_en?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "path_template_items_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "path_template_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "path_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      path_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          level: Database["public"]["Enums"]["difficulty"]
+          published: boolean
+          skill_key: string
+          title_ar: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          published?: boolean
+          skill_key: string
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          level?: Database["public"]["Enums"]["difficulty"]
+          published?: boolean
+          skill_key?: string
+          title_ar?: string
+          title_en?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "path_templates_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
+      path_updates: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          path_item_id: string | null
+          percent: number
+          skill_key: string | null
+          user_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          path_item_id?: string | null
+          percent?: number
+          skill_key?: string | null
+          user_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          path_item_id?: string | null
+          percent?: number
+          skill_key?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "path_updates_path_item_id_fkey"
+            columns: ["path_item_id"]
+            isOneToOne: false
+            referencedRelation: "learning_path_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "path_updates_skill_key_fkey"
+            columns: ["skill_key"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["key"]
           },
         ]
       }
