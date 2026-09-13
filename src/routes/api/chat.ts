@@ -26,7 +26,12 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const apiKey = process.env["LOVABLE_API_KEY"];
-        if (!apiKey) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        if (!apiKey) {
+          return new Response(
+            "AI key is missing. Add LOVABLE_API_KEY to your local .env file and restart the dev server.",
+            { status: 500 },
+          );
+        }
 
         const input = messages.slice(-24).map((m) => ({
           role: m.role,
