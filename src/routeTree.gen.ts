@@ -24,6 +24,12 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedSkillsRouteImport } from './routes/_authenticated/skills'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
+import { Route as AuthenticatedInstructorIndexRouteImport } from './routes/_authenticated/instructor.index'
+import { Route as AuthenticatedInstructorContentRouteImport } from './routes/_authenticated/instructor.content'
+import { Route as AuthenticatedInstructorPathsRouteImport } from './routes/_authenticated/instructor.paths'
+import { Route as AuthenticatedInstructorReviewsRouteImport } from './routes/_authenticated/instructor.reviews'
+import { Route as AuthenticatedInstructorStudentsRouteImport } from './routes/_authenticated/instructor.students'
+import { Route as AuthenticatedInstructorStudioRouteImport } from './routes/_authenticated/instructor.studio'
 import { Route as AuthenticatedSubjectsIndexRouteImport } from './routes/_authenticated/subjects.index'
 import { Route as AuthenticatedSubjectsCodeRouteImport } from './routes/_authenticated/subjects.$code'
 
@@ -101,6 +107,42 @@ const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedInstructorIndexRoute =
+  AuthenticatedInstructorIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
+const AuthenticatedInstructorContentRoute =
+  AuthenticatedInstructorContentRouteImport.update({
+    id: '/content',
+    path: '/content',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
+const AuthenticatedInstructorPathsRoute =
+  AuthenticatedInstructorPathsRouteImport.update({
+    id: '/paths',
+    path: '/paths',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
+const AuthenticatedInstructorReviewsRoute =
+  AuthenticatedInstructorReviewsRouteImport.update({
+    id: '/reviews',
+    path: '/reviews',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
+const AuthenticatedInstructorStudentsRoute =
+  AuthenticatedInstructorStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
+const AuthenticatedInstructorStudioRoute =
+  AuthenticatedInstructorStudioRouteImport.update({
+    id: '/studio',
+    path: '/studio',
+    getParentRoute: () => AuthenticatedInstructorRoute,
+  } as any)
 const AuthenticatedSubjectsIndexRoute =
   AuthenticatedSubjectsIndexRouteImport.update({
     id: '/subjects/',
@@ -120,7 +162,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/instructor': typeof AuthenticatedInstructorRoute
+  '/instructor': typeof AuthenticatedInstructorRouteWithChildren
   '/my-work': typeof AuthenticatedMyWorkRoute
   '/path': typeof AuthenticatedPathRoute
   '/placement': typeof AuthenticatedPlacementRoute
@@ -129,7 +171,13 @@ export interface FileRoutesByFullPath {
   '/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/instructor/content': typeof AuthenticatedInstructorContentRoute
+  '/instructor/paths': typeof AuthenticatedInstructorPathsRoute
+  '/instructor/reviews': typeof AuthenticatedInstructorReviewsRoute
+  '/instructor/students': typeof AuthenticatedInstructorStudentsRoute
+  '/instructor/studio': typeof AuthenticatedInstructorStudioRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
+  '/instructor/': typeof AuthenticatedInstructorIndexRoute
   '/subjects/': typeof AuthenticatedSubjectsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -138,7 +186,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/instructor': typeof AuthenticatedInstructorRoute
   '/my-work': typeof AuthenticatedMyWorkRoute
   '/path': typeof AuthenticatedPathRoute
   '/placement': typeof AuthenticatedPlacementRoute
@@ -147,7 +194,13 @@ export interface FileRoutesByTo {
   '/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/instructor/content': typeof AuthenticatedInstructorContentRoute
+  '/instructor/paths': typeof AuthenticatedInstructorPathsRoute
+  '/instructor/reviews': typeof AuthenticatedInstructorReviewsRoute
+  '/instructor/students': typeof AuthenticatedInstructorStudentsRoute
+  '/instructor/studio': typeof AuthenticatedInstructorStudioRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
+  '/instructor': typeof AuthenticatedInstructorIndexRoute
   '/subjects': typeof AuthenticatedSubjectsIndexRoute
 }
 export interface FileRoutesById {
@@ -158,7 +211,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/instructor': typeof AuthenticatedInstructorRoute
+  '/_authenticated/instructor': typeof AuthenticatedInstructorRouteWithChildren
   '/_authenticated/my-work': typeof AuthenticatedMyWorkRoute
   '/_authenticated/path': typeof AuthenticatedPathRoute
   '/_authenticated/placement': typeof AuthenticatedPlacementRoute
@@ -167,7 +220,13 @@ export interface FileRoutesById {
   '/_authenticated/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/_authenticated/instructor/content': typeof AuthenticatedInstructorContentRoute
+  '/_authenticated/instructor/paths': typeof AuthenticatedInstructorPathsRoute
+  '/_authenticated/instructor/reviews': typeof AuthenticatedInstructorReviewsRoute
+  '/_authenticated/instructor/students': typeof AuthenticatedInstructorStudentsRoute
+  '/_authenticated/instructor/studio': typeof AuthenticatedInstructorStudioRoute
   '/_authenticated/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
+  '/_authenticated/instructor/': typeof AuthenticatedInstructorIndexRoute
   '/_authenticated/subjects/': typeof AuthenticatedSubjectsIndexRoute
 }
 export interface FileRouteTypes {
@@ -187,7 +246,13 @@ export interface FileRouteTypes {
     | '/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
+    | '/instructor/content'
+    | '/instructor/paths'
+    | '/instructor/reviews'
+    | '/instructor/students'
+    | '/instructor/studio'
     | '/subjects/$code'
+    | '/instructor/'
     | '/subjects/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -196,7 +261,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/assistant'
     | '/dashboard'
-    | '/instructor'
     | '/my-work'
     | '/path'
     | '/placement'
@@ -205,7 +269,13 @@ export interface FileRouteTypes {
     | '/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
+    | '/instructor/content'
+    | '/instructor/paths'
+    | '/instructor/reviews'
+    | '/instructor/students'
+    | '/instructor/studio'
     | '/subjects/$code'
+    | '/instructor'
     | '/subjects'
   id:
     | '__root__'
@@ -224,7 +294,13 @@ export interface FileRouteTypes {
     | '/_authenticated/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
+    | '/_authenticated/instructor/content'
+    | '/_authenticated/instructor/paths'
+    | '/_authenticated/instructor/reviews'
+    | '/_authenticated/instructor/students'
+    | '/_authenticated/instructor/studio'
     | '/_authenticated/subjects/$code'
+    | '/_authenticated/instructor/'
     | '/_authenticated/subjects/'
   fileRoutesById: FileRoutesById
 }
@@ -343,6 +419,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/instructor/': {
+      id: '/_authenticated/instructor/'
+      path: '/'
+      fullPath: '/instructor/'
+      preLoaderRoute: typeof AuthenticatedInstructorIndexRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
+    '/_authenticated/instructor/content': {
+      id: '/_authenticated/instructor/content'
+      path: '/content'
+      fullPath: '/instructor/content'
+      preLoaderRoute: typeof AuthenticatedInstructorContentRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
+    '/_authenticated/instructor/paths': {
+      id: '/_authenticated/instructor/paths'
+      path: '/paths'
+      fullPath: '/instructor/paths'
+      preLoaderRoute: typeof AuthenticatedInstructorPathsRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
+    '/_authenticated/instructor/reviews': {
+      id: '/_authenticated/instructor/reviews'
+      path: '/reviews'
+      fullPath: '/instructor/reviews'
+      preLoaderRoute: typeof AuthenticatedInstructorReviewsRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
+    '/_authenticated/instructor/students': {
+      id: '/_authenticated/instructor/students'
+      path: '/students'
+      fullPath: '/instructor/students'
+      preLoaderRoute: typeof AuthenticatedInstructorStudentsRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
+    '/_authenticated/instructor/studio': {
+      id: '/_authenticated/instructor/studio'
+      path: '/studio'
+      fullPath: '/instructor/studio'
+      preLoaderRoute: typeof AuthenticatedInstructorStudioRouteImport
+      parentRoute: typeof AuthenticatedInstructorRoute
+    }
     '/_authenticated/subjects/': {
       id: '/_authenticated/subjects/'
       path: '/subjects'
@@ -360,11 +478,35 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedInstructorRouteChildren {
+  AuthenticatedInstructorContentRoute: typeof AuthenticatedInstructorContentRoute
+  AuthenticatedInstructorPathsRoute: typeof AuthenticatedInstructorPathsRoute
+  AuthenticatedInstructorReviewsRoute: typeof AuthenticatedInstructorReviewsRoute
+  AuthenticatedInstructorStudentsRoute: typeof AuthenticatedInstructorStudentsRoute
+  AuthenticatedInstructorStudioRoute: typeof AuthenticatedInstructorStudioRoute
+  AuthenticatedInstructorIndexRoute: typeof AuthenticatedInstructorIndexRoute
+}
+
+const AuthenticatedInstructorRouteChildren: AuthenticatedInstructorRouteChildren =
+  {
+    AuthenticatedInstructorContentRoute: AuthenticatedInstructorContentRoute,
+    AuthenticatedInstructorPathsRoute: AuthenticatedInstructorPathsRoute,
+    AuthenticatedInstructorReviewsRoute: AuthenticatedInstructorReviewsRoute,
+    AuthenticatedInstructorStudentsRoute: AuthenticatedInstructorStudentsRoute,
+    AuthenticatedInstructorStudioRoute: AuthenticatedInstructorStudioRoute,
+    AuthenticatedInstructorIndexRoute: AuthenticatedInstructorIndexRoute,
+  }
+
+const AuthenticatedInstructorRouteWithChildren =
+  AuthenticatedInstructorRoute._addFileChildren(
+    AuthenticatedInstructorRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedInstructorRoute: typeof AuthenticatedInstructorRoute
+  AuthenticatedInstructorRoute: typeof AuthenticatedInstructorRouteWithChildren
   AuthenticatedMyWorkRoute: typeof AuthenticatedMyWorkRoute
   AuthenticatedPathRoute: typeof AuthenticatedPathRoute
   AuthenticatedPlacementRoute: typeof AuthenticatedPlacementRoute
@@ -379,7 +521,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedInstructorRoute: AuthenticatedInstructorRoute,
+  AuthenticatedInstructorRoute: AuthenticatedInstructorRouteWithChildren,
   AuthenticatedMyWorkRoute: AuthenticatedMyWorkRoute,
   AuthenticatedPathRoute: AuthenticatedPathRoute,
   AuthenticatedPlacementRoute: AuthenticatedPlacementRoute,
