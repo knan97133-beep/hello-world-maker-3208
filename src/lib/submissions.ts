@@ -314,19 +314,19 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
     .select("id, status, skill_key")
     .eq("user_id", userId);
 
-  // Only the CURRENT path counts: steps of the active goal's skill.
-  // Leftover steps from earlier skills must never block the move.
+  // Only the CURRENT path counts: the steps of the current goal (weakest skill).
+  // Steps of other skills must never block the move.
   const { data: activeGoals } = await supabase
     .from("learning_goals")
-    .select("skill_key")
+    .select("id, skill_key, target_level")
     .eq("user_id", userId)
-    .eq("status", "active");
-  const activeSkills = new Set((activeGoals ?? []).map((g) => g.skill_key));
+    .eq("status", "active")
+    .order("priority");
+  const currentGoal = (activeGoals ?? [])[0];
   const allItems = items ?? [];
-  const list =
-    activeSkills.size > 0
-      ? allItems.filter((i) => (i.skill_key ? activeSkills.has(i.skill_key) : false))
-      : allItems;
+  const list = currentGoal
+    ? allItems.filter((i) => i.skill_key === currentGoal.skill_key)
+    : allItems;
   if (list.length === 0 || list.some((i) => i.status !== "done")) return false;
 
   const { data: profile } = await supabase
@@ -336,12 +336,8 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
   const levels = Object.fromEntries((profile ?? []).map((r) => [r.skill_key, r.level]));
   await saveSkillSnapshot(userId, "current", levels);
 
-  // close the goals that reached the target
-  const { data: goals } = await supabase
-    .from("learning_goals")
-    .select("id, skill_key, target_level")
-    .eq("user_id", userId)
-    .eq("status", "active");
+  // close the current goal when the end-of-path exam was passed
+  const goals = currentGoal ? [currentGoal] : [];
   // the end-of-path exam result decides the move, not only the raw level
   const { data: exams } = await supabase
     .from("submissions")
@@ -354,7 +350,7 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
     if (e.skill_key && !examScore.has(e.skill_key)) examScore.set(e.skill_key, e.grade ?? 0);
   }
 
-  for (const g of goals ?? []) {
+  for (const g of goals) {
     const now = levels[g.skill_key] ?? 0;
     const exam = examScore.get(g.skill_key) ?? -1;
     if (exam >= PASS_SCORE || now >= (g.target_level ?? 70)) {
