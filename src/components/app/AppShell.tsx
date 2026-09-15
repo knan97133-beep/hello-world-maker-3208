@@ -48,13 +48,15 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
 
-  const nav = [
-    ...items,
-    ...(isInstructor || isAdmin
-      ? [{ to: "/instructor", ar: "منطقة المدرّس", en: "Instructor", icon: GraduationCap }]
-      : []),
-    ...(isAdmin ? [{ to: "/admin", ar: "لوحة المدير", en: "Admin", icon: Shield }] : []),
-  ];
+  // Staff (instructor/admin) see only their own areas; students see the student area.
+  const isStaff = Boolean(isInstructor) || Boolean(isAdmin);
+  const nav = isStaff
+    ? [
+        { to: "/instructor", ar: "منطقة المدرّس", en: "Instructor", icon: GraduationCap },
+        ...(isAdmin ? [{ to: "/admin", ar: "لوحة المدير", en: "Admin", icon: Shield }] : []),
+        { to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User },
+      ]
+    : items;
 
 
   const links = (
