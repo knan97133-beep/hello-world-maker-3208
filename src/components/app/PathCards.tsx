@@ -153,6 +153,13 @@ export function LearningPathCard() {
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
   const hasProfile = (profile.data?.length ?? 0) > 0;
   const allDone = items.length > 0 && doneCount === items.length;
+  const pathSkill = currentGoal?.skill_key ?? items[0]?.skill_key ?? null;
+  const pathSkillName = (() => {
+    const s = (skills.data ?? []).find((x) => x.key === pathSkill);
+    return s ? (ar ? s.name_ar : s.name_en) : null;
+  })();
+  const examResult = useFinalExamResult(user?.id, pathSkill ?? undefined);
+  const examPassed = Boolean(examResult.data?.passed);
 
   // Graded instructor feedback feeds the skill profile before anything else.
   useEffect(() => {
