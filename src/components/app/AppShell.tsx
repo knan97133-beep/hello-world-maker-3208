@@ -7,17 +7,25 @@
  */
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  BarChart3,
   BookOpen,
+  ClipboardCheck,
+  Code2,
+  FolderKanban,
   GraduationCap,
   Languages,
   LayoutDashboard,
   LogOut,
   Menu,
+  Route as RouteIcon,
+  Send,
   Shield,
   Sparkles,
   Target,
-
+  UserCog,
   User,
+  Users,
+  Workflow,
   X,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
@@ -27,16 +35,76 @@ import { useI18n } from "@/lib/i18n";
 import { useIsAdmin, useIsInstructor, useSession, useSignOut } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
-type NavItem = { to: string; ar: string; en: string; icon: typeof BookOpen };
+type NavItem = {
+  to: string;
+  ar: string;
+  en: string;
+  icon: typeof BookOpen;
+  exact?: boolean;
+};
+type NavGroup = { ar: string; en: string; items: NavItem[] };
 
-const items: NavItem[] = [
-  { to: "/dashboard", ar: "لوحة التحكم", en: "Dashboard", icon: LayoutDashboard },
-  { to: "/placement", ar: "تحديد المستوى", en: "Placement test", icon: Target },
-  { to: "/subjects", ar: "المواد", en: "Subjects", icon: BookOpen },
-  { to: "/assistant", ar: "المساعد الذكي", en: "AI Assistant", icon: Sparkles },
-  { to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User },
+const studentNav: NavGroup[] = [
+  {
+    ar: "التعلّم",
+    en: "Learning",
+    items: [
+      { to: "/dashboard", ar: "لوحة التحكم", en: "Dashboard", icon: LayoutDashboard },
+      { to: "/placement", ar: "تحديد المستوى", en: "Placement test", icon: Target },
+      { to: "/skills", ar: "ملف مهاراتي", en: "Skill profile", icon: BarChart3 },
+      { to: "/path", ar: "مسار التعلّم", en: "Learning path", icon: RouteIcon },
+    ],
+  },
+  {
+    ar: "العمل",
+    en: "Work",
+    items: [
+      { to: "/subjects", ar: "المواد", en: "Subjects", icon: BookOpen },
+      { to: "/my-work", ar: "تسليماتي", en: "My submissions", icon: Send },
+      { to: "/playground", ar: "بيئة التجربة", en: "Playground", icon: Code2 },
+      { to: "/assistant", ar: "المساعد الذكي", en: "AI Assistant", icon: Sparkles },
+    ],
+  },
+  {
+    ar: "حسابي",
+    en: "Account",
+    items: [{ to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User }],
+  },
 ];
 
+const instructorGroup: NavGroup = {
+  ar: "منطقة المدرّس",
+  en: "Instructor",
+  items: [
+    { to: "/instructor", ar: "موادي", en: "My subjects", icon: GraduationCap, exact: true },
+    { to: "/instructor/students", ar: "متابعة الطلاب", en: "Student follow-up", icon: Users },
+    { to: "/instructor/reviews", ar: "مراجعة التسليمات", en: "Reviews", icon: ClipboardCheck },
+    { to: "/instructor/paths", ar: "بناء المسارات", en: "Path builder", icon: Workflow },
+    { to: "/instructor/studio", ar: "استوديو الذكاء", en: "AI studio", icon: Sparkles },
+    { to: "/instructor/content", ar: "إدارة المحتوى", en: "Content", icon: FolderKanban },
+  ],
+};
+
+const adminGroup: NavGroup = {
+  ar: "لوحة المدير",
+  en: "Admin",
+  items: [
+    { to: "/admin", ar: "الإحصائيات", en: "Statistics", icon: Shield, exact: true },
+    { to: "/admin/subjects", ar: "المواد", en: "Subjects", icon: BookOpen },
+    { to: "/admin/roles", ar: "الأدوار", en: "Roles", icon: UserCog },
+    { to: "/admin/placement", ar: "أسئلة تحديد المستوى", en: "Placement", icon: Target },
+    { to: "/admin/students", ar: "الطلاب والتسليمات", en: "Students", icon: Users },
+    { to: "/admin/paths", ar: "قوالب المسارات", en: "Path templates", icon: Workflow },
+    { to: "/admin/studio", ar: "استوديو الذكاء", en: "AI studio", icon: Sparkles },
+    { to: "/admin/content", ar: "إدارة المحتوى", en: "Content", icon: FolderKanban },
+  ],
+};
+
+const accountGroup: NavGroup = {
+  ar: "حسابي",
+  en: "Account",
+  items: [{ to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User }],
+};
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { lang, toggle, t } = useI18n();
@@ -50,13 +118,47 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   // Staff (instructor/admin) see only their own areas; students see the student area.
   const isStaff = Boolean(isInstructor) || Boolean(isAdmin);
-  const nav = isStaff
+  const groups: NavGroup[] = isStaff
     ? [
-        { to: "/instructor", ar: "منطقة المدرّس", en: "Instructor", icon: GraduationCap },
-        ...(isAdmin ? [{ to: "/admin", ar: "لوحة المدير", en: "Admin", icon: Shield }] : []),
-        { to: "/profile", ar: "الملف الشخصي", en: "Profile", icon: User },
+        ...(isInstructor ? [instructorGroup] : []),
+        ...(isAdmin ? [adminGroup] : []),
+        accountGroup,
       ]
-    : items;
+    : studentNav;
+
+  const links = (
+    <nav className="flex flex-col gap-5">
+      {groups.map((group) => (
+        <div key={group.en} className="flex flex-col gap-1">
+          <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+            {ar ? group.ar : group.en}
+          </p>
+          {group.items.map((item) => {
+            const active = item.exact
+              ? path === item.to
+              : path === item.to || path.startsWith(item.to + "/");
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                )}
+              >
+                <item.icon className="size-4" />
+                {ar ? item.ar : item.en}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </nav>
+  );
+
 
 
   const links = (
