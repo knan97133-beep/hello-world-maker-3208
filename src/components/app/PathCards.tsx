@@ -241,22 +241,39 @@ export function LearningPathCard() {
         </div>
       )}
 
-      {allDone && (
-        <div className="mt-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
-          <p className="text-sm font-semibold">
-            {ar
-              ? "أنهيت المسار الحالي — جاهز للانتقال إلى المهارة التالية."
-              : "Current path finished — ready to move to the next skill."}
-          </p>
-          <Button size="sm" className="mt-2" onClick={goNext} disabled={advancing}>
-            {advancing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ArrowRight className="size-4" />
-            )}
-            {ar ? "المسار التالي" : "Next path"}
-          </Button>
-        </div>
+      {allDone && pathSkill && (
+        <>
+          <FinalExamCard
+            skillKey={pathSkill}
+            skillName={pathSkillName}
+            subjectIds={items.map((i) => i.subject_id).filter((v): v is string => Boolean(v))}
+            onPassed={goNext}
+          />
+          <div className="mt-3 rounded-xl border border-border/70 p-4">
+            <p className="text-sm font-semibold">
+              {examPassed
+                ? ar
+                  ? "اجتزت اختبار المسار — يمكنك الانتقال إلى المهارة التالية."
+                  : "You passed the exam — you can move to the next skill."
+                : ar
+                  ? "اجتز اختبار إنهاء المسار أولاً لفتح المسار التالي."
+                  : "Pass the end-of-path exam first to unlock the next path."}
+            </p>
+            <Button
+              size="sm"
+              className="mt-2"
+              onClick={goNext}
+              disabled={advancing || !examPassed}
+            >
+              {advancing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ArrowRight className="size-4" />
+              )}
+              {ar ? "المسار التالي" : "Next path"}
+            </Button>
+          </div>
+        </>
       )}
 
 
