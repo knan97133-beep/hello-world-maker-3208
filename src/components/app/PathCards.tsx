@@ -31,7 +31,9 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { FinalExamCard } from "@/components/app/FinalExamCard";
 import { Button } from "@/components/ui/button";
+import { useFinalExamResult } from "@/lib/final-exam";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
