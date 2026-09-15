@@ -119,18 +119,34 @@ export async function saveSkillLevels(
  * latest assessment results.
  */
 export async function refreshRecommendations(userId: string, lang: "ar" | "en") {
-  const [{ data: skills }, { data: profile }, { data: subjects }] = await Promise.all([
-    supabase.from("skills").select("key, name_en").order("sort_order"),
-    supabase.from("skill_profile").select("skill_key, level").eq("user_id", userId),
-    supabase.from("subjects").select("id, code, name_en, skill_key").order("year"),
-  ]);
+  const [{ data: skills }, { data: profile }, { data: subjects }, { data: templates }] =
+    await Promise.all([
+      supabase.from("skills").select("key, name_en").order("sort_order"),
+      supabase.from("skill_profile").select("skill_key, level").eq("user_id", userId),
+      supabase.from("subjects").select("id, code, name_en, skill_key").order("year"),
+      supabase
+        .from("path_templates")
+        .select("skill_key, level, title_en")
+        .eq("published", true),
+    ]);
+
+  // AI may only suggest skills the instructor actually built a path for.
+  const paths = (templates ?? []).map((t) => ({
+    skill_key: t.skill_key,
+    level: t.level as string,
+    title_en: t.title_en,
+  }));
+  const withPath = new Set(paths.map((p) => p.skill_key));
+  if (paths.length === 0) return 0;
 
   const levels = new Map((profile ?? []).map((r) => [r.skill_key, r.level]));
-  const payload = (skills ?? []).map((s) => ({
-    key: s.key,
-    name_en: s.name_en,
-    level: levels.get(s.key) ?? 0,
-  }));
+  const payload = (skills ?? [])
+    .filter((s) => withPath.has(s.key))
+    .map((s) => ({
+      key: s.key,
+      name_en: s.name_en,
+      level: levels.get(s.key) ?? 0,
+    }));
   if (payload.length === 0) throw new Error("No skills configured");
 
   const recs = await generateRecommendations({
@@ -142,6 +158,7 @@ export async function refreshRecommendations(userId: string, lang: "ar" | "en") 
         name_en: s.name_en,
         skill_key: s.skill_key ?? null,
       })),
+      paths,
     },
   });
 

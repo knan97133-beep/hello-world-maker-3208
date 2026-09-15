@@ -13,6 +13,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 
+import { PASS_SCORE } from "@/lib/final-exam";
 import { supabase } from "@/integrations/supabase/client";
 import { rebuildLearningPath, saveSkillSnapshot } from "@/lib/learning-path";
 import { refreshRecommendations, saveSkillLevels } from "@/lib/skills";
@@ -329,9 +330,22 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
     .select("id, skill_key, target_level")
     .eq("user_id", userId)
     .eq("status", "active");
+  // the end-of-path exam result decides the move, not only the raw level
+  const { data: exams } = await supabase
+    .from("submissions")
+    .select("skill_key, grade, created_at")
+    .eq("user_id", userId)
+    .eq("item_type", "quiz")
+    .order("created_at", { ascending: false });
+  const examScore = new Map<string, number>();
+  for (const e of exams ?? []) {
+    if (e.skill_key && !examScore.has(e.skill_key)) examScore.set(e.skill_key, e.grade ?? 0);
+  }
+
   for (const g of goals ?? []) {
     const now = levels[g.skill_key] ?? 0;
-    if (now >= (g.target_level ?? 70)) {
+    const exam = examScore.get(g.skill_key) ?? -1;
+    if (exam >= PASS_SCORE || now >= (g.target_level ?? 70)) {
       // improved enough -> close it, the next weakest skill becomes the goal
       await supabase.from("learning_goals").update({ status: "reached" }).eq("id", g.id);
     } else {

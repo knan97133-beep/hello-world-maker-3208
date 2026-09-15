@@ -19,6 +19,10 @@ const Input = z.object({
   subjects: z
     .array(z.object({ code: z.string(), name_en: z.string(), skill_key: z.string().nullable() }))
     .default([]),
+  // The learning paths the instructor published — the ONLY things AI may suggest.
+  paths: z
+    .array(z.object({ skill_key: z.string(), level: z.string(), title_en: z.string() }))
+    .default([]),
 });
 
 export type Recommendation = {
@@ -36,6 +40,8 @@ const SYSTEM = `You are the InfoPath academic advisor for Information Technology
 Given a student's skill profile (0-100 per skill) and the available subjects, produce 4 to 6
 personalised, actionable recommendations that form a learning path.
 Rules:
+- You may ONLY recommend skills that appear in the provided "paths" list (learning paths the
+  instructor published). Never invent a skill, a path or content outside that list.
 - Start with the WEAKEST skills (lowest level) and give them priority 1.
 - Mention a subject code from the provided list when relevant, otherwise null.
 - action_type is one of: course, project, challenge, review.
@@ -48,7 +54,11 @@ export const generateRecommendations = createServerFn({ method: "POST" })
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) throw new Error("Missing LOVABLE_API_KEY");
 
-    const prompt = JSON.stringify({ skills: data.skills, subjects: data.subjects });
+    const prompt = JSON.stringify({
+      skills: data.skills,
+      subjects: data.subjects,
+      paths: data.paths,
+    });
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/responses", {
       method: "POST",
@@ -103,5 +113,10 @@ export const generateRecommendations = createServerFn({ method: "POST" })
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("AI returned an unreadable answer");
     const parsed = JSON.parse(match[0]) as { recommendations?: Recommendation[] };
-    return (parsed.recommendations ?? []).slice(0, 6);
+    // Hard guard: drop anything outside the instructor-published paths.
+    const allowed = new Set(data.paths.map((p) => p.skill_key));
+    const list = (parsed.recommendations ?? []).filter(
+      (r) => allowed.size === 0 || allowed.has(r.skill_key),
+    );
+    return list.slice(0, 6);
   });
