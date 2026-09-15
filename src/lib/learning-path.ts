@@ -60,7 +60,8 @@ export function useLearningGoals(userId: string | undefined) {
         .from("learning_goals")
         .select("*")
         .eq("user_id", userId!)
-        .order("priority");
+        .order("priority")
+        .order("created_at");
       if (error) throw error;
       return data;
     },
