@@ -91,20 +91,48 @@ function Dashboard() {
         />
       </div>
 
-      {/* The connected loop: skill profile -> goal -> path -> evolution */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <SkillProfileCard />
-        <CurrentGoalCard />
+      {/* Quick links to the dedicated pages */}
+      <div className="grid gap-3 sm:grid-cols-2">
+        <QuickLink
+          to="/skills"
+          title={ar ? "ملف مهاراتي" : "My skill profile"}
+          desc={ar ? "مستوياتك وهدف التعلّم الحالي" : "Your levels and current goal"}
+        />
+        <QuickLink
+          to="/path"
+          title={ar ? "مسار التعلّم الشخصي" : "My learning path"}
+          desc={ar ? "خطوات المسار النشط واختبار الإنهاء" : "Active path steps and final exam"}
+        />
+        <QuickLink
+          to="/my-work"
+          title={ar ? "تسليماتي" : "My submissions"}
+          desc={ar ? "الدرجات والملاحظات من الأستاذ" : "Grades and instructor feedback"}
+        />
+        <QuickLink
+          to="/placement"
+          title={ar ? "اختبار تحديد المستوى" : "Placement test"}
+          desc={ar ? "أعد الاختبار لتحديث مستواك" : "Retake it to refresh your level"}
+        />
       </div>
-
-      <LearningPathCard />
-
-      <MySubmissionsCard />
-
-      <ProgressEvolutionCard />
     </div>
   );
 }
+
+function QuickLink({ to, title, desc }: { to: string; title: string; desc: string }) {
+  return (
+    <Link
+      to={to}
+      className="flex items-center justify-between gap-3 rounded-2xl border border-border/70 bg-card p-5 transition-colors hover:border-primary/60"
+    >
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold">{title}</span>
+        <span className="block text-xs text-muted-foreground">{desc}</span>
+      </span>
+      <ArrowRight className="size-4 shrink-0 text-primary" />
+    </Link>
+  );
+}
+
 
 function StatCard({
   icon,

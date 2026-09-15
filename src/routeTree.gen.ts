@@ -16,9 +16,12 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedInstructorRouteImport } from './routes/_authenticated/instructor'
+import { Route as AuthenticatedMyWorkRouteImport } from './routes/_authenticated/my-work'
+import { Route as AuthenticatedPathRouteImport } from './routes/_authenticated/path'
 import { Route as AuthenticatedPlacementRouteImport } from './routes/_authenticated/placement'
 import { Route as AuthenticatedPlaygroundRouteImport } from './routes/_authenticated/playground'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedSkillsRouteImport } from './routes/_authenticated/skills'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedSubjectsIndexRouteImport } from './routes/_authenticated/subjects.index'
@@ -58,6 +61,16 @@ const AuthenticatedInstructorRoute = AuthenticatedInstructorRouteImport.update({
   path: '/instructor',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMyWorkRoute = AuthenticatedMyWorkRouteImport.update({
+  id: '/my-work',
+  path: '/my-work',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPathRoute = AuthenticatedPathRouteImport.update({
+  id: '/path',
+  path: '/path',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlacementRoute = AuthenticatedPlacementRouteImport.update({
   id: '/placement',
   path: '/placement',
@@ -71,6 +84,11 @@ const AuthenticatedPlaygroundRoute = AuthenticatedPlaygroundRouteImport.update({
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSkillsRoute = AuthenticatedSkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -103,9 +121,12 @@ export interface FileRoutesByFullPath {
   '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/instructor': typeof AuthenticatedInstructorRoute
+  '/my-work': typeof AuthenticatedMyWorkRoute
+  '/path': typeof AuthenticatedPathRoute
   '/placement': typeof AuthenticatedPlacementRoute
   '/playground': typeof AuthenticatedPlaygroundRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
@@ -118,9 +139,12 @@ export interface FileRoutesByTo {
   '/assistant': typeof AuthenticatedAssistantRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/instructor': typeof AuthenticatedInstructorRoute
+  '/my-work': typeof AuthenticatedMyWorkRoute
+  '/path': typeof AuthenticatedPathRoute
   '/placement': typeof AuthenticatedPlacementRoute
   '/playground': typeof AuthenticatedPlaygroundRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
@@ -135,9 +159,12 @@ export interface FileRoutesById {
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/instructor': typeof AuthenticatedInstructorRoute
+  '/_authenticated/my-work': typeof AuthenticatedMyWorkRoute
+  '/_authenticated/path': typeof AuthenticatedPathRoute
   '/_authenticated/placement': typeof AuthenticatedPlacementRoute
   '/_authenticated/playground': typeof AuthenticatedPlaygroundRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/skills': typeof AuthenticatedSkillsRoute
   '/api/chat': typeof ApiChatRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/subjects/$code': typeof AuthenticatedSubjectsCodeRoute
@@ -152,9 +179,12 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/dashboard'
     | '/instructor'
+    | '/my-work'
+    | '/path'
     | '/placement'
     | '/playground'
     | '/profile'
+    | '/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
     | '/subjects/$code'
@@ -167,9 +197,12 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/dashboard'
     | '/instructor'
+    | '/my-work'
+    | '/path'
     | '/placement'
     | '/playground'
     | '/profile'
+    | '/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
     | '/subjects/$code'
@@ -183,9 +216,12 @@ export interface FileRouteTypes {
     | '/_authenticated/assistant'
     | '/_authenticated/dashboard'
     | '/_authenticated/instructor'
+    | '/_authenticated/my-work'
+    | '/_authenticated/path'
     | '/_authenticated/placement'
     | '/_authenticated/playground'
     | '/_authenticated/profile'
+    | '/_authenticated/skills'
     | '/api/chat'
     | '/.lovable/oauth/consent'
     | '/_authenticated/subjects/$code'
@@ -251,6 +287,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInstructorRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/my-work': {
+      id: '/_authenticated/my-work'
+      path: '/my-work'
+      fullPath: '/my-work'
+      preLoaderRoute: typeof AuthenticatedMyWorkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/path': {
+      id: '/_authenticated/path'
+      path: '/path'
+      fullPath: '/path'
+      preLoaderRoute: typeof AuthenticatedPathRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/placement': {
       id: '/_authenticated/placement'
       path: '/placement'
@@ -270,6 +320,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/skills': {
+      id: '/_authenticated/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof AuthenticatedSkillsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/chat': {
@@ -308,9 +365,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedInstructorRoute: typeof AuthenticatedInstructorRoute
+  AuthenticatedMyWorkRoute: typeof AuthenticatedMyWorkRoute
+  AuthenticatedPathRoute: typeof AuthenticatedPathRoute
   AuthenticatedPlacementRoute: typeof AuthenticatedPlacementRoute
   AuthenticatedPlaygroundRoute: typeof AuthenticatedPlaygroundRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedSkillsRoute: typeof AuthenticatedSkillsRoute
   AuthenticatedSubjectsCodeRoute: typeof AuthenticatedSubjectsCodeRoute
   AuthenticatedSubjectsIndexRoute: typeof AuthenticatedSubjectsIndexRoute
 }
@@ -320,9 +380,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedInstructorRoute: AuthenticatedInstructorRoute,
+  AuthenticatedMyWorkRoute: AuthenticatedMyWorkRoute,
+  AuthenticatedPathRoute: AuthenticatedPathRoute,
   AuthenticatedPlacementRoute: AuthenticatedPlacementRoute,
   AuthenticatedPlaygroundRoute: AuthenticatedPlaygroundRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedSkillsRoute: AuthenticatedSkillsRoute,
   AuthenticatedSubjectsCodeRoute: AuthenticatedSubjectsCodeRoute,
   AuthenticatedSubjectsIndexRoute: AuthenticatedSubjectsIndexRoute,
 }
