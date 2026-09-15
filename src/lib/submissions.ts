@@ -311,10 +311,22 @@ export async function applyGradedSubmissions(userId: string) {
 export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
   const { data: items } = await supabase
     .from("learning_path_items")
-    .select("id, status")
+    .select("id, status, skill_key")
     .eq("user_id", userId);
 
-  const list = items ?? [];
+  // Only the CURRENT path counts: steps of the active goal's skill.
+  // Leftover steps from earlier skills must never block the move.
+  const { data: activeGoals } = await supabase
+    .from("learning_goals")
+    .select("skill_key")
+    .eq("user_id", userId)
+    .eq("status", "active");
+  const activeSkills = new Set((activeGoals ?? []).map((g) => g.skill_key));
+  const allItems = items ?? [];
+  const list =
+    activeSkills.size > 0
+      ? allItems.filter((i) => (i.skill_key ? activeSkills.has(i.skill_key) : false))
+      : allItems;
   if (list.length === 0 || list.some((i) => i.status !== "done")) return false;
 
   const { data: profile } = await supabase
