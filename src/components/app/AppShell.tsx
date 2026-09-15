@@ -159,32 +159,6 @@ export function AppShell({ children }: { children: ReactNode }) {
     </nav>
   );
 
-
-
-  const links = (
-    <nav className="flex flex-col gap-1">
-      {nav.map((item) => {
-        const active = path === item.to || path.startsWith(item.to + "/");
-        return (
-          <Link
-            key={item.to}
-            to={item.to}
-            onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-              active
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-            )}
-          >
-            <item.icon className="size-4" />
-            {ar ? item.ar : item.en}
-          </Link>
-        );
-      })}
-    </nav>
-  );
-
   return (
     <div className="flex min-h-screen bg-background">
       {/* Desktop sidebar */}
