@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
 
-export const PASS_SCORE = 60;
+export const PASS_SCORE = 50;
 
 export type ExamQuestion = {
   id: string;

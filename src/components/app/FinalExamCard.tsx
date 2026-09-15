@@ -3,7 +3,7 @@
  * -------------------------------------------------------------
  * The exam the student takes right after finishing every step of the
  * current learning path. Questions come from the subjects that path
- * covered. Passing (>= 60%) records the grade, feeds the skill profile
+ * covered. Passing (>= PASS_SCORE) records the grade, feeds the skill profile
  * and unlocks the next path.
  */
 import { useQueryClient } from "@tanstack/react-query";
