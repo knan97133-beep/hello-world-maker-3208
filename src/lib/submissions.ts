@@ -324,7 +324,9 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
   const activeSkills = new Set((activeGoals ?? []).map((g) => g.skill_key));
   const allItems = items ?? [];
   const list =
-    activeSkills.size > 0 ? allItems.filter((i) => activeSkills.has(i.skill_key)) : allItems;
+    activeSkills.size > 0
+      ? allItems.filter((i) => (i.skill_key ? activeSkills.has(i.skill_key) : false))
+      : allItems;
   if (list.length === 0 || list.some((i) => i.status !== "done")) return false;
 
   const { data: profile } = await supabase
