@@ -284,10 +284,18 @@ export async function rebuildLearningPath(userId: string) {
   const levels = new Map((profile ?? []).map((r) => [r.skill_key, r.level]));
   if (levels.size === 0) return 0;
 
+  // Skills whose path the student already finished must not come back.
+  const { data: reachedGoals } = await supabase
+    .from("learning_goals")
+    .select("skill_key")
+    .eq("user_id", userId)
+    .eq("status", "reached");
+  const reached = new Set((reachedGoals ?? []).map((g) => g.skill_key));
+
   // 1) Goals = every skill below the target, weakest first.
   const weak = (skills ?? [])
     .map((s) => ({ ...s, level: levels.get(s.key) ?? 0 }))
-    .filter((s) => s.level < TARGET_LEVEL)
+    .filter((s) => s.level < TARGET_LEVEL && !reached.has(s.key))
     .sort((a, b) => a.level - b.level)
     .slice(0, 4);
 
