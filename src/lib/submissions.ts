@@ -13,6 +13,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 
+import { PASS_SCORE } from "@/lib/final-exam";
 import { supabase } from "@/integrations/supabase/client";
 import { rebuildLearningPath, saveSkillSnapshot } from "@/lib/learning-path";
 import { refreshRecommendations, saveSkillLevels } from "@/lib/skills";
