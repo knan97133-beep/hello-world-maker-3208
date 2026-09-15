@@ -31,7 +31,9 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { FinalExamCard } from "@/components/app/FinalExamCard";
 import { Button } from "@/components/ui/button";
+import { useFinalExamResult } from "@/lib/final-exam";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
@@ -153,6 +155,13 @@ export function LearningPathCard() {
   const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
   const hasProfile = (profile.data?.length ?? 0) > 0;
   const allDone = items.length > 0 && doneCount === items.length;
+  const pathSkill = currentGoal?.skill_key ?? items[0]?.skill_key ?? null;
+  const pathSkillName = (() => {
+    const s = (skills.data ?? []).find((x) => x.key === pathSkill);
+    return s ? (ar ? s.name_ar : s.name_en) : null;
+  })();
+  const examResult = useFinalExamResult(user?.id, pathSkill ?? undefined);
+  const examPassed = Boolean(examResult.data?.passed);
 
   // Graded instructor feedback feeds the skill profile before anything else.
   useEffect(() => {
@@ -241,22 +250,39 @@ export function LearningPathCard() {
         </div>
       )}
 
-      {allDone && (
-        <div className="mt-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
-          <p className="text-sm font-semibold">
-            {ar
-              ? "أنهيت المسار الحالي — جاهز للانتقال إلى المهارة التالية."
-              : "Current path finished — ready to move to the next skill."}
-          </p>
-          <Button size="sm" className="mt-2" onClick={goNext} disabled={advancing}>
-            {advancing ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <ArrowRight className="size-4" />
-            )}
-            {ar ? "المسار التالي" : "Next path"}
-          </Button>
-        </div>
+      {allDone && pathSkill && (
+        <>
+          <FinalExamCard
+            skillKey={pathSkill}
+            skillName={pathSkillName}
+            subjectIds={items.map((i) => i.subject_id).filter((v): v is string => Boolean(v))}
+            onPassed={goNext}
+          />
+          <div className="mt-3 rounded-xl border border-border/70 p-4">
+            <p className="text-sm font-semibold">
+              {examPassed
+                ? ar
+                  ? "اجتزت اختبار المسار — يمكنك الانتقال إلى المهارة التالية."
+                  : "You passed the exam — you can move to the next skill."
+                : ar
+                  ? "اجتز اختبار إنهاء المسار أولاً لفتح المسار التالي."
+                  : "Pass the end-of-path exam first to unlock the next path."}
+            </p>
+            <Button
+              size="sm"
+              className="mt-2"
+              onClick={goNext}
+              disabled={advancing || !examPassed}
+            >
+              {advancing ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <ArrowRight className="size-4" />
+              )}
+              {ar ? "المسار التالي" : "Next path"}
+            </Button>
+          </div>
+        </>
       )}
 
 

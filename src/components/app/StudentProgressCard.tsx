@@ -11,6 +11,7 @@ import { Clock, Loader2, Send, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { StudentPathEditor } from "@/components/app/StudentPathEditor";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/lib/i18n";
@@ -173,6 +174,12 @@ export function StudentProgressCard({ subjectIds }: { subjectIds: string[] }) {
                     ))}
                   </div>
                 )}
+
+                <StudentPathEditor
+                  studentId={s.userId}
+                  skillKey={s.currentGoal}
+                  subjectIds={subjectIds}
+                />
 
                 <ReplyBox studentId={s.userId} ar={ar} />
 
