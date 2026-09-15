@@ -321,7 +321,8 @@ export async function advanceLearningPath(userId: string, lang: "ar" | "en") {
     .select("id, skill_key, target_level")
     .eq("user_id", userId)
     .eq("status", "active")
-    .order("priority");
+    .order("priority")
+    .order("created_at");
   const currentGoal = (activeGoals ?? [])[0];
   const allItems = items ?? [];
   const list = currentGoal
