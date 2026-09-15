@@ -5,20 +5,14 @@
  * the personalised path built from instructor-published content, and
  * the level evolution after each assessment.
  */
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Target, Trophy } from "lucide-react";
+import { ArrowRight, BookOpen, Target, Trophy } from "lucide-react";
 
-import { SkillProfileCard } from "@/components/app/LearningLoop";
-import {
-  CurrentGoalCard,
-  LearningPathCard,
-  ProgressEvolutionCard,
-} from "@/components/app/PathCards";
-import { MySubmissionsCard } from "@/components/app/SubmissionCards";
 import { supabase } from "@/integrations/supabase/client";
 import { useI18n } from "@/lib/i18n";
 import { useProfile, useSession } from "@/lib/session";
+
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
