@@ -136,11 +136,15 @@ function PlaygroundPage() {
     setDoc(buildDoc(code.html, code.css, code.js));
   }, [code]);
 
-  // Run once on first render so the student sees output immediately.
+  // Keep the preview in sync with the code (debounced) so the output is never stale.
   useEffect(() => {
-    setDoc(buildDoc(code.html, code.css, code.js));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const id = setTimeout(() => {
+      setLogs([]);
+      setDoc(buildDoc(code.html, code.css, code.js));
+    }, 600);
+    return () => clearTimeout(id);
+  }, [code]);
+
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "html", label: "HTML" },
