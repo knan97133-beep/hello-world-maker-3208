@@ -149,7 +149,7 @@
  * Defined after the base tokens so these values win.
  * ============================================================= */
 :root {
-  --radius: 0.5rem;
+  --radius: 1rem;
   --background: oklch(0.985 0.005 240);
   --foreground: oklch(0.255 0.045 255);
   --card: oklch(1 0 0);
