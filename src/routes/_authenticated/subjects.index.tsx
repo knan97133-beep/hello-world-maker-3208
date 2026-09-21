@@ -5,7 +5,7 @@
  */
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, ClipboardList, Lock, Swords, Video } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,27 @@ function SubjectsPage() {
         .order("sort_order");
       if (error) throw error;
       return data;
+    },
+  });
+
+  const counts = useQuery({
+    queryKey: ["subject-content-counts"],
+    queryFn: async () => {
+      const [videos, challenges, quizzes] = await Promise.all([
+        supabase.from("resources").select("subject_id").eq("kind", "video"),
+        supabase.from("challenges").select("subject_id"),
+        supabase.from("quiz_questions").select("subject_id"),
+      ]);
+      const tally = (rows: { subject_id: string }[] | null) => {
+        const map: Record<string, number> = {};
+        for (const r of rows ?? []) map[r.subject_id] = (map[r.subject_id] ?? 0) + 1;
+        return map;
+      };
+      return {
+        videos: tally(videos.data),
+        challenges: tally(challenges.data),
+        quizzes: tally(quizzes.data),
+      };
     },
   });
 
@@ -121,6 +142,20 @@ function SubjectsPage() {
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                   {ar ? s.description_ar : s.description_en}
                 </p>
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5">
+                    <Video className="size-3.5" />
+                    {counts.data?.videos[s.id] ?? 0} {ar ? "فيديو" : "videos"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5">
+                    <Swords className="size-3.5" />
+                    {counts.data?.challenges[s.id] ?? 0} {ar ? "تحدٍّ" : "challenges"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5">
+                    <ClipboardList className="size-3.5" />
+                    {counts.data?.quizzes[s.id] ?? 0} {ar ? "سؤال اختبار" : "quiz questions"}
+                  </span>
+                </div>
                 <p className="mt-3 text-xs text-muted-foreground">
                   {open
                     ? ar
