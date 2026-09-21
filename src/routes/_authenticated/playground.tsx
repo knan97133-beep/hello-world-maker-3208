@@ -58,8 +58,7 @@ type Tab = "html" | "css" | "js";
 
 /** Builds the sandboxed document, injecting a console bridge to the parent. */
 function buildDoc(html: string, css: string, js: string) {
-  return `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style>
-<script>
+  const bridge = `<script>
   (function () {
     var send = function (level, args) {
       try {
@@ -75,12 +74,29 @@ function buildDoc(html: string, css: string, js: string) {
     window.addEventListener("error", function (e) { send("error", [e.message]); });
     window.addEventListener("unhandledrejection", function (e) { send("error", [String(e.reason)]); });
   })();
-<\/script>
-</head><body>${html}
-<script>
-try { ${js} } catch (err) { console.error(err && err.message ? err.message : err); }
-<\/script></body></html>`;
+<\/script>`;
+
+  const userScript = js.trim() ? `<script>\n${js}\n<\/script>` : "";
+  const styleTag = css.trim() ? `<style>${css}<\/style>` : "";
+  const source = html.trim();
+  const isFullDoc = /<html[\s>]/i.test(source) || /<!doctype/i.test(source);
+
+  // The student pasted a complete page: keep it as-is and only inject helpers.
+  if (isFullDoc) {
+    if (/<\/head>/i.test(source)) {
+      return source
+        .replace(/<\/head>/i, `${bridge}${styleTag}</head>`)
+        .replace(/<\/body>/i, `${userScript}</body>`);
+    }
+    return `${bridge}${styleTag}${source}${userScript}`;
+  }
+
+  return `<!doctype html><html><head><meta charset="utf-8">${styleTag}
+${bridge}
+</head><body>${source}
+${userScript}</body></html>`;
 }
+
 
 function PlaygroundPage() {
   const { lang } = useI18n();
