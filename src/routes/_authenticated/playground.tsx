@@ -185,10 +185,15 @@ function PlaygroundPage() {
               </button>
             ))}
             <div className="ms-auto flex gap-1">
+              <Button size="sm" variant="ghost" onClick={() => setCode(starter)}>
+                <RotateCcw className="size-4" />
+                {ar ? "المثال" : "Example"}
+              </Button>
               <Button size="sm" variant="ghost" onClick={() => setCode({ ...code, [tab]: "" })}>
                 <Eraser className="size-4" />
                 {ar ? "مسح" : "Clear"}
               </Button>
+
               <Button size="sm" onClick={run}>
                 <Play className="size-4" />
                 {ar ? "تشغيل" : "Run"}
