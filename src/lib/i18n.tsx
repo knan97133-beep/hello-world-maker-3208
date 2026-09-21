@@ -28,27 +28,24 @@ export const dict: Dict = {
     ar: "المساعد الأكاديمي الذكي لطلاب المعلوماتية",
     en: "Smart Academic Assistant for IT Students",
   },
-  nav_features: { ar: "المميزات", en: "Features" },
-  nav_how: { ar: "كيف يعمل", en: "How it works" },
+  nav_features: { ar: "التعلّم العملي", en: "Hands-on learning" },
+  nav_how: { ar: "رحلة الطالب", en: "Student journey" },
   nav_why: { ar: "لماذا InfoPath", en: "Why InfoPath" },
   nav_ai: { ar: "المساعد الذكي", en: "AI Assistant" },
   nav_login: { ar: "تسجيل الدخول", en: "Log in" },
   nav_start: { ar: "ابدأ الآن", en: "Get started" },
 
   hero_badge: { ar: "مشروع تخرج – هندسة المعلوماتية", en: "IT Engineering Capstone" },
-  hero_title: {
-    ar: "خارطة طريق عملية من السنة الأولى حتى سوق العمل",
-    en: "A practical roadmap from year one to your first job",
-  },
+  hero_title: { ar: "اكتشف ضعفك، ابنِ مهارتك، وأثبتها بمشروع", en: "Find your gap, build the skill, prove it with a project" },
   hero_sub: {
-    ar: "اختر سنتك الدراسية وفصلك وموادك، واحصل على كورسات ومشاريع وتحديات واختبارات ومتابعة دقيقة لتقدمك، مع مساعد ذكي يرافقك في كل خطوة.",
-    en: "Pick your academic year, semester and subjects, then get curated courses, projects, challenges, quizzes and progress tracking — with an AI assistant beside you at every step.",
+    ar: "يحدد InfoPath مستواك، يرتّب مهاراتك من الأضعف، ثم يضعك في مسار عملي أعدّه الأستاذ ويتابع إنجازك حتى اختبار الانتقال للمجال التالي.",
+    en: "InfoPath assesses your level, prioritises your weakest skill, and places you on an instructor-built practical path through review and advancement testing.",
   },
   hero_cta: { ar: "ابدأ الآن مجاناً", en: "Start now — free" },
-  hero_cta2: { ar: "استكشف المواد", en: "Explore subjects" },
-  stat_years: { ar: "سنوات دراسية", en: "Academic years" },
-  stat_subjects: { ar: "مادة ومسار", en: "Subjects & tracks" },
-  stat_ai: { ar: "مساعد ذكي متاح", en: "AI assistant" },
+  hero_cta2: { ar: "شاهد رحلة الطالب", en: "See the student journey" },
+  stat_years: { ar: "مهارات أساسية", en: "Core skills" },
+  stat_subjects: { ar: "مواد تعليمية", en: "Learning resources" },
+  stat_ai: { ar: "قوالب مسار", en: "Path templates" },
 
   why_title: { ar: "لماذا أنشأنا InfoPath؟", en: "Why we built InfoPath" },
   why_sub: {
@@ -121,8 +118,8 @@ export const dict: Dict = {
   ai_6: { ar: "يلخص المحاضرات ويساعد في حل الأخطاء البرمجية", en: "Summarises lectures and helps debug your code" },
   ai_7: { ar: "ينصحك بخطوات الاستعداد لسوق العمل", en: "Coaches you on getting job-ready" },
 
-  how_title: { ar: "كيف يعمل الموقع؟", en: "How it works" },
-  how_sub: { ar: "أربع خطوات فقط تفصلك عن خارطتك.", en: "Four steps to your personal roadmap." },
+  how_title: { ar: "رحلة واحدة واضحة من الاختبار إلى الإنجاز", en: "One clear journey from assessment to achievement" },
+  how_sub: { ar: "كل مرحلة تعتمد على نتيجتك الحقيقية ومراجعة الأستاذ.", en: "Every stage responds to real results and instructor review." },
   s1_t: { ar: "أنشئ حسابك", en: "Create your account" },
   s1_d: { ar: "تسجيل سريع بالبريد الجامعي أو الشخصي.", en: "Quick sign-up with your university or personal email." },
   s2_t: { ar: "اختر سنتك وفصلك", en: "Pick year & semester" },
@@ -134,8 +131,8 @@ export const dict: Dict = {
 
   cta_title: { ar: "جاهز لبناء خبرتك العملية؟", en: "Ready to build real experience?" },
   cta_sub: {
-    ar: "ابدأ اليوم واحصل على خارطة طريق تناسب سنتك الدراسية.",
-    en: "Start today and get a roadmap tailored to your academic year.",
+    ar: "أنشئ حسابك، ابدأ اختبار المستوى، وخذ أول خطوة في مسار عملي يشرف عليه أستاذك.",
+    en: "Create your account, take the placement test, and begin an instructor-guided practical path.",
   },
 
   footer_about: {
