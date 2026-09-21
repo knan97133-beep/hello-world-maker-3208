@@ -9,7 +9,7 @@
  * Nothing leaves the browser — no external editor or website needed.
  */
 import { createFileRoute } from "@tanstack/react-router";
-import { Code2, Eraser, Play, Terminal } from "lucide-react";
+import { Code2, Eraser, Play, RotateCcw, Terminal } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
