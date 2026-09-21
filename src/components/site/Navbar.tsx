@@ -11,9 +11,8 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 
 const sections = [
-  { href: "#features", key: "nav_features" },
-  { href: "#how", key: "nav_how" },
-  { href: "#why", key: "nav_why" },
+  { href: "#journey", key: "nav_how" },
+  { href: "#practice", key: "nav_features" },
   { href: "#ai", key: "nav_ai" },
 ];
 
@@ -22,10 +21,10 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-accent-gradient text-primary-foreground">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-accent-gradient text-primary-foreground">
             <GraduationCap className="size-5" />
           </span>
           <span className="text-lg font-extrabold tracking-tight">InfoPath</span>
