@@ -54,6 +54,27 @@ function SubjectsPage() {
     },
   });
 
+  const counts = useQuery({
+    queryKey: ["subject-content-counts"],
+    queryFn: async () => {
+      const [videos, challenges, quizzes] = await Promise.all([
+        supabase.from("resources").select("subject_id").eq("kind", "video"),
+        supabase.from("challenges").select("subject_id"),
+        supabase.from("quiz_questions").select("subject_id"),
+      ]);
+      const tally = (rows: { subject_id: string }[] | null) => {
+        const map: Record<string, number> = {};
+        for (const r of rows ?? []) map[r.subject_id] = (map[r.subject_id] ?? 0) + 1;
+        return map;
+      };
+      return {
+        videos: tally(videos.data),
+        challenges: tally(challenges.data),
+        quizzes: tally(quizzes.data),
+      };
+    },
+  });
+
   const list = (subjects.data ?? []).filter(
     (s) => (year === null || s.year === year) && (semester === null || s.semester === semester),
   );
