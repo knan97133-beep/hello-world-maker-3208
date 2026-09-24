@@ -7,6 +7,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Route as Compass } from "lucide-react";
 
 import { LearningPathCard, ProgressEvolutionCard } from "@/components/app/PathCards";
+import { TeacherMessagesCard } from "@/components/app/TeacherMessagesCard";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/path")({
@@ -43,6 +44,7 @@ function PathPage() {
         </p>
       </header>
 
+      <TeacherMessagesCard ar={ar} />
       <LearningPathCard />
       <ProgressEvolutionCard />
     </div>
